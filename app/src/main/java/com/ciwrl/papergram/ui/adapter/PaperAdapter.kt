@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ciwrl.papergram.R
-import com.ciwrl.papergram.Paper
+import com.ciwrl.papergram.data.model.Paper
 
 class PaperAdapter(private val papers: List<Paper>) : RecyclerView.Adapter<PaperAdapter.PaperViewHolder>() {
 

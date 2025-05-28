@@ -1,4 +1,4 @@
-package com.ciwrl.papergram
+package com.ciwrl.papergram.data.model
 
 data class Paper(
     val title: String,
