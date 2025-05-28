@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_bookmark_border_24dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Salva paper"
+            android:contentDescription="@string/salva_paper"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:padding="4dp"/>
