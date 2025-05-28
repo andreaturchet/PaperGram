@@ -8,7 +8,11 @@
         android:id="@+id/nav_home"
         android:name="com.ciwrl.papergram.ui.home.FeedFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_feed" />
+        tools:layout="@layout/fragment_feed">
+        <action
+            android:id="@+id/action_nav_home_to_paperDetailFragment"
+            app:destination="@id/paperDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_gallery"
@@ -21,5 +25,16 @@
         android:name="com.ciwrl.papergram.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/paperDetailFragment"
+        android:name="com.ciwrl.papergram.ui.detail.PaperDetailFragment"
+        android:label="Dettagli Paper"
+        tools:layout="@layout/fragment_paper_detail">
+
+        <argument
+            android:name="selectedPaper"
+            app:argType="com.ciwrl.papergram.data.model.Paper" />
+    </fragment>
 
 </navigation>

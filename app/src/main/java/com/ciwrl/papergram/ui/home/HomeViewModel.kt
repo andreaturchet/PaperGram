@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ciwrl.papergram.data.model.Paper
 import com.ciwrl.papergram.data.model.api.ArxivEntry
-import com.ciwrl.papergram.data.model.api.ArxivLink
 import com.ciwrl.papergram.data.network.RetrofitInstance
 import kotlinx.coroutines.launch
 
@@ -69,19 +68,47 @@ class HomeViewModel : ViewModel() {
     }
 
     // Funzione helper per mappare da ArxivEntry (modello API) a Paper (modello UI)
-    private fun mapArxivEntryToPaper(entry: ArxivEntry): Paper? {
-        // Semplificazione: prendiamo il primo autore e puliamo il titolo/summary
+    private fun mapArxivEntryToPaper(entry: ArxivEntry): Paper {
         val title = entry.title.trim().replace("\\s+".toRegex(), " ")
         val abstract = entry.summary.trim().replace("\\s+".toRegex(), " ")
         val authorsList = entry.authors?.map { it.name } ?: listOf("Autore Sconosciuto")
-
         val keywordsString = entry.categories?.joinToString(", ") { it.term } ?: "N/A"
+        val paperId = entry.id.substringAfterLast('/') // Estrai l'ID pulito
+
+        var paperHtmlLink: String? = null
+        var paperPdfLink: String? = null
+
+        entry.links?.forEach { link ->
+            if (link.rel == "alternate" && link.type == "text/html") {
+                paperHtmlLink = link.href
+            } else if (link.type == "application/pdf" && (link.rel == "related" || link.titleAttribute == "pdf")) {
+                if (link.titleAttribute == "pdf") {
+                    paperPdfLink = link.href
+                } else if (paperPdfLink == null) {
+                    paperPdfLink = link.href
+                }
+            }
+        }
+
+        // Fallback se non abbiamo trovato un link HTML specifico ma c'è un link generico
+        if (paperHtmlLink == null && entry.links?.isNotEmpty() == true) {
+            paperHtmlLink = entry.links?.first()?.href
+        }
+        // Fallback per il PDF se non trovato con type="application/pdf" ma l'HTML link punta a un PDF
+        if (paperPdfLink == null && paperHtmlLink?.endsWith(".pdf", ignoreCase = true) == true) {
+            paperPdfLink = paperHtmlLink
+        }
+
 
         return Paper(
+            id = paperId,
             title = title,
             authors = authorsList,
             abstractText = abstract,
-            keywords = keywordsString
+            keywords = keywordsString,
+            publishedDate = entry.publishedDate.substringBefore("T"),
+            htmlLink = paperHtmlLink,
+            pdfLink = paperPdfLink
         )
     }
 }

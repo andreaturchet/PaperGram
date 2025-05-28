@@ -11,4 +11,6 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="salva_paper">Salva paper</string>
+    <string name="published_on">Pubblicato il: %1$s</string>
+    <string name="title_paper_detail">Dettaglio Paper</string>
 </resources>

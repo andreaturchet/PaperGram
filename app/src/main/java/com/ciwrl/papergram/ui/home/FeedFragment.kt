@@ -1,5 +1,6 @@
 package com.ciwrl.papergram.ui.home
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +14,8 @@ import androidx.viewpager2.widget.ViewPager2
 import com.ciwrl.papergram.R
 import com.ciwrl.papergram.data.model.Paper
 import com.ciwrl.papergram.ui.adapter.PaperAdapter
+import androidx.appcompat.app.AppCompatActivity
+
 
 class FeedFragment : Fragment() {
 
@@ -45,11 +48,16 @@ class FeedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         setupObservers()
     }
 
+    override fun onResume() {
+        super.onResume()
+        (activity as? AppCompatActivity)?.supportActionBar?.title = getString(R.string.app_name)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     private fun setupObservers() {
         homeViewModel.papers.observe(viewLifecycleOwner) { papers ->
             paperList.clear()

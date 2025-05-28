@@ -4,10 +4,13 @@ package com.ciwrl.papergram.ui.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ciwrl.papergram.R
 import com.ciwrl.papergram.data.model.Paper
+import androidx.navigation.findNavController
+import com.ciwrl.papergram.ui.home.FeedFragmentDirections
 
 class PaperAdapter(private val papers: List<Paper>) : RecyclerView.Adapter<PaperAdapter.PaperViewHolder>() {
 
@@ -17,6 +20,9 @@ class PaperAdapter(private val papers: List<Paper>) : RecyclerView.Adapter<Paper
         val authorsTextView: TextView = itemView.findViewById(R.id.textViewAuthors)
         val abstractTextView: TextView = itemView.findViewById(R.id.textViewAbstract)
         val keywordsTextView: TextView = itemView.findViewById(R.id.textViewKeywords)
+        val imageButtonSave: ImageButton = itemView.findViewById(R.id.imageButtonSave)
+        val cardView: View = itemView
+
     }
 
     // Chiamato quando RecyclerView ha bisogno di creare un nuovo ViewHolder (una nuova card)
@@ -27,11 +33,17 @@ class PaperAdapter(private val papers: List<Paper>) : RecyclerView.Adapter<Paper
 
     override fun onBindViewHolder(holder: PaperViewHolder, position: Int) {
         val currentPaper = papers[position]
-
         holder.titleTextView.text = currentPaper.title
         holder.authorsTextView.text = currentPaper.authors.joinToString(", ")
         holder.abstractTextView.text = currentPaper.abstractText
-        holder.keywordsTextView.text = currentPaper.keywords // O currentPaper.keywords.joinToString(", ") se è una List
+        holder.keywordsTextView.text = currentPaper.keywords
+        holder.cardView.setOnClickListener {
+            val action = FeedFragmentDirections.actionNavHomeToPaperDetailFragment(currentPaper)
+            holder.itemView.findNavController().navigate(action)
+        }
+
+        // TODO: Gestire il click e lo stato dell'icona imageButtonSave
+        // holder.imageButtonSave.setOnClickListener { ... }
     }
 
     override fun getItemCount(): Int {
