@@ -9,6 +9,7 @@ import com.ciwrl.papergram.R
 import com.ciwrl.papergram.data.model.Paper
 import com.ciwrl.papergram.databinding.ItemPaperCardBinding
 import com.ciwrl.papergram.ui.home.UiPaper
+import com.bumptech.glide.Glide
 
 class PaperAdapter(
     private val onPaperClick: (Paper) -> Unit,
@@ -29,6 +30,11 @@ class PaperAdapter(
             } else {
                 binding.imageButtonSave.setImageResource(R.drawable.ic_bookmark_border_24dp)
             }
+            Glide.with(binding.root.context)
+                .load(paper.imageUrl)
+                .placeholder(R.drawable.placeholder_paper_image)
+                .error(R.drawable.placeholder_paper_image)
+                .into(binding.imageViewPaper)
         }
     }
 

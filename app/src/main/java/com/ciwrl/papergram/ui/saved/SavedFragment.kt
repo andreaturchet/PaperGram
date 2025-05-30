@@ -10,8 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ciwrl.papergram.data.model.Paper
 import com.ciwrl.papergram.databinding.FragmentSavedBinding
-import com.ciwrl.papergram.ui.adapter.PaperAdapter
-import com.ciwrl.papergram.ui.home.UiPaper
+import com.ciwrl.papergram.ui.adapter.SavedPaperAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -20,7 +19,7 @@ class SavedFragment : Fragment() {
     private var _binding: FragmentSavedBinding? = null
     private val binding get() = _binding!!
     private val savedViewModel: SavedViewModel by viewModels()
-    private lateinit var paperAdapter: PaperAdapter
+    private lateinit var savedPaperAdapter: SavedPaperAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSavedBinding.inflate(inflater, container, false)
@@ -39,37 +38,34 @@ class SavedFragment : Fragment() {
                 } else {
                     binding.savedRecyclerView.visibility = View.VISIBLE
                     binding.emptyView.visibility = View.GONE
-
-                    val uiPapers = savedPapers.map { entity ->
-                        val paper = Paper(
-                            id = entity.id,
-                            title = entity.title,
-                            authors = entity.authors.split(", "),
-                            abstractText = entity.abstractText,
-                            keywords = entity.keywords,
-                            publishedDate = entity.publishedDate,
-                            htmlLink = entity.htmlLink,
-                            pdfLink = entity.pdfLink
-                        )
-                        UiPaper(paper = paper, isSaved = true)
-                    }
-                    paperAdapter.submitList(uiPapers)
+                    savedPaperAdapter.submitList(savedPapers)
                 }
             }
         }
     }
 
     private fun setupRecyclerView() {
-        paperAdapter = PaperAdapter(
-            onPaperClick = { paper ->
+        savedPaperAdapter = SavedPaperAdapter(
+            onPaperClick = { entity ->
+                val paper = Paper(
+                    id = entity.id,
+                    title = entity.title,
+                    authors = entity.authors.split(", "),
+                    abstractText = entity.abstractText,
+                    keywords = entity.keywords,
+                    publishedDate = entity.publishedDate,
+                    htmlLink = entity.htmlLink,
+                    pdfLink = entity.pdfLink,
+                    imageUrl = entity.imageUrl
+                )
                 val action = SavedFragmentDirections.actionNavSavedToPaperDetailFragment(paper)
                 findNavController().navigate(action)
             },
-            onSaveClick = { paper, _ ->
-                savedViewModel.deletePaper(paper.id)
+            onDeleteClick = { paperId ->
+                savedViewModel.deletePaper(paperId)
             }
         )
-        binding.savedRecyclerView.setAdapter(paperAdapter)
+        binding.savedRecyclerView.adapter = savedPaperAdapter
     }
 
     override fun onDestroyView() {

@@ -30,7 +30,8 @@ class PaperDetailViewModel(application: Application) : AndroidViewModel(applicat
                         keywords = paper.keywords,
                         publishedDate = paper.publishedDate,
                         htmlLink = paper.htmlLink,
-                        pdfLink = paper.pdfLink
+                        pdfLink = paper.pdfLink,
+                        imageUrl = paper.imageUrl
                     )
                     savedPaperDao.insertPaper(entity)
                 }

@@ -12,6 +12,7 @@ import com.ciwrl.papergram.databinding.FragmentFeedBinding
 import com.ciwrl.papergram.ui.adapter.PaperAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import androidx.recyclerview.widget.PagerSnapHelper
 
 class FeedFragment : Fragment() {
 
@@ -46,7 +47,9 @@ class FeedFragment : Fragment() {
                 homeViewModel.toggleSaveState(paper, isSaved)
             }
         )
-        binding.recyclerViewFeed.setAdapter(paperAdapter)
+        binding.recyclerViewFeed.adapter = paperAdapter
+        val snapHelper = PagerSnapHelper()
+        snapHelper.attachToRecyclerView(binding.recyclerViewFeed)
     }
 
     override fun onDestroyView() {

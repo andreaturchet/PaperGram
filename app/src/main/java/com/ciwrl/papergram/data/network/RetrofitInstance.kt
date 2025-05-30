@@ -6,6 +6,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.util.concurrent.TimeUnit
+import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
 
@@ -37,5 +38,16 @@ object RetrofitInstance {
 
     val arxivApiService: ArxivApiService by lazy {
         retrofit.create(ArxivApiService::class.java)
+    }
+    private const val SEMANTIC_SCHOLAR_BASE_URL = "https://api.semanticscholar.org/graph/v1/"
+    private val semanticScholarRetrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(SEMANTIC_SCHOLAR_BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create()) 
+            .build()
+    }
+    val semanticScholarApiService: SemanticScholarApiService by lazy {
+        semanticScholarRetrofit.create(SemanticScholarApiService::class.java)
     }
 }
