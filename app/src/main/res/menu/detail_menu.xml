@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_save"
+        android:title="@string/salva_paper"
+        android:icon="@drawable/ic_bookmark_border_24dp"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_open_link"
+        android:title="Apri nel browser"
+        android:icon="@drawable/baseline_add_to_home_screen_24"
+        app:showAsAction="ifRoom" />
+
+</menu>

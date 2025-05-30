@@ -15,16 +15,14 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.ciwrl.papergram.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
-
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.ciwrl.papergram.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_saved"
+        android:name="com.ciwrl.papergram.ui.saved.SavedFragment"
+        android:label="Paper Salvati"
+        tools:layout="@layout/fragment_saved" >
+        <action
+            android:id="@+id/action_nav_saved_to_paperDetailFragment"
+            app:destination="@id/paperDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/paperDetailFragment"

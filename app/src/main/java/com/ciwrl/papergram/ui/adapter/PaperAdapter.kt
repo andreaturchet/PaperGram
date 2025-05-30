@@ -1,52 +1,53 @@
 package com.ciwrl.papergram.ui.adapter
 
-
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ciwrl.papergram.R
 import com.ciwrl.papergram.data.model.Paper
-import androidx.navigation.findNavController
-import com.ciwrl.papergram.ui.home.FeedFragmentDirections
+import com.ciwrl.papergram.databinding.ItemPaperCardBinding
+import com.ciwrl.papergram.ui.home.UiPaper
 
-class PaperAdapter(private val papers: List<Paper>) : RecyclerView.Adapter<PaperAdapter.PaperViewHolder>() {
+class PaperAdapter(
+    private val onPaperClick: (Paper) -> Unit,
+    private val onSaveClick: (Paper, Boolean) -> Unit
+) : ListAdapter<UiPaper, PaperAdapter.PaperViewHolder>(DiffCallback) {
 
-    // ViewHolder: contiene i riferimenti alle View dentro ogni item_paper_card.xml
-    class PaperViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val titleTextView: TextView = itemView.findViewById(R.id.textViewTitle)
-        val authorsTextView: TextView = itemView.findViewById(R.id.textViewAuthors)
-        val abstractTextView: TextView = itemView.findViewById(R.id.textViewAbstract)
-        val keywordsTextView: TextView = itemView.findViewById(R.id.textViewKeywords)
-        val imageButtonSave: ImageButton = itemView.findViewById(R.id.imageButtonSave)
-        val cardView: View = itemView
+    class PaperViewHolder(private val binding: ItemPaperCardBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(uiPaper: UiPaper, onPaperClick: (Paper) -> Unit, onSaveClick: (Paper, Boolean) -> Unit) {
+            val paper = uiPaper.paper
+            binding.textViewTitle.text = paper.title
+            binding.textViewAuthors.text = paper.authors.joinToString(", ")
+            binding.textViewAbstract.text = paper.abstractText
+            binding.root.setOnClickListener { onPaperClick(paper) }
+            binding.imageButtonSave.setOnClickListener { onSaveClick(paper, uiPaper.isSaved) }
 
+            if (uiPaper.isSaved) {
+                binding.imageButtonSave.setImageResource(R.drawable.baseline_bookmark_24)
+            } else {
+                binding.imageButtonSave.setImageResource(R.drawable.ic_bookmark_border_24dp)
+            }
+        }
     }
 
-    // Chiamato quando RecyclerView ha bisogno di creare un nuovo ViewHolder (una nuova card)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaperViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_paper_card, parent, false)
-        return PaperViewHolder(itemView)
+        val binding = ItemPaperCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return PaperViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: PaperViewHolder, position: Int) {
-        val currentPaper = papers[position]
-        holder.titleTextView.text = currentPaper.title
-        holder.authorsTextView.text = currentPaper.authors.joinToString(", ")
-        holder.abstractTextView.text = currentPaper.abstractText
-        holder.keywordsTextView.text = currentPaper.keywords
-        holder.cardView.setOnClickListener {
-            val action = FeedFragmentDirections.actionNavHomeToPaperDetailFragment(currentPaper)
-            holder.itemView.findNavController().navigate(action)
-        }
-
-        // TODO: Gestire il click e lo stato dell'icona imageButtonSave
-        // holder.imageButtonSave.setOnClickListener { ... }
+        val uiPaper = getItem(position)
+        holder.bind(uiPaper, onPaperClick, onSaveClick)
     }
 
-    override fun getItemCount(): Int {
-        return papers.size
+    companion object DiffCallback : DiffUtil.ItemCallback<UiPaper>() {
+        override fun areItemsTheSame(oldItem: UiPaper, newItem: UiPaper): Boolean {
+            return oldItem.paper.id == newItem.paper.id
+        }
+        override fun areContentsTheSame(oldItem: UiPaper, newItem: UiPaper): Boolean {
+            return oldItem == newItem
+        }
     }
 }
