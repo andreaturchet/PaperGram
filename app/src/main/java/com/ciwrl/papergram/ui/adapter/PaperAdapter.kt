@@ -30,11 +30,6 @@ class PaperAdapter(
             } else {
                 binding.imageButtonSave.setImageResource(R.drawable.ic_bookmark_border_24dp)
             }
-            Glide.with(binding.root.context)
-                .load(paper.imageUrl)
-                .placeholder(R.drawable.placeholder_paper_image)
-                .error(R.drawable.placeholder_paper_image)
-                .into(binding.imageViewPaper)
         }
     }
 

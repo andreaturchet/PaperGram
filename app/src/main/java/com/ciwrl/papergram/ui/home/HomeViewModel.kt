@@ -9,13 +9,11 @@ import com.ciwrl.papergram.data.database.SavedPaperEntity
 import com.ciwrl.papergram.data.model.Paper
 import com.ciwrl.papergram.data.model.api.ArxivEntry
 import com.ciwrl.papergram.data.network.RetrofitInstance
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.ciwrl.papergram.data.network.BatchRequest
+
 
 // Stato per la UI
 data class UiPaper(val paper: Paper, val isSaved: Boolean)
@@ -28,49 +26,30 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val savedPaperDao = AppDatabase.getDatabase(application).savedPaperDao()
     private val arxivApi = RetrofitInstance.arxivApiService
-    private val semanticApi = RetrofitInstance.semanticScholarApiService
 
     val papers: StateFlow<List<UiPaper>> = flow {
         _status.value = ApiStatus.LOADING
         try {
-            val arxivResponse = RetrofitInstance.arxivApiService.getRecentPapers(searchQuery = "cat:cs.AI", maxResults = 20)
+            val arxivResponse = RetrofitInstance.arxivApiService.getRecentPapers(
+                searchQuery = "cat:cs.AI",
+                maxResults = 20,
+                start = 0
+            )
+
             if (arxivResponse.isSuccessful && arxivResponse.body() != null) {
-                val papersFromArxiv = arxivResponse.body()!!.entries!!.map { mapArxivEntryToPaper(it) }
+                val papersFromArxiv = arxivResponse.body()?.entries?.map { mapArxivEntryToPaper(it) } ?: emptyList()
 
-                val paperIds = papersFromArxiv.map { "arXiv:" + it.id }
-
-                val semanticResponse = RetrofitInstance.semanticScholarApiService.getPaperDetailsBatch(
-                    BatchRequest(ids = paperIds)
-                )
-
-                val enrichedPapers: List<Paper>
-                if (semanticResponse.isSuccessful && semanticResponse.body() != null) {
-                    val semanticData = semanticResponse.body()!!
-                    val imageUrlMap = semanticData.filterNotNull().associateBy(
-                        keySelector = { it.paperId },
-                        valueTransform = { it.primaryImage }
-                    )
-                    enrichedPapers = papersFromArxiv.map { paper ->
-                        val paperFullId = "arXiv:${paper.id}"
-                        val imageUrl = imageUrlMap[paperFullId]
-                        paper.copy(imageUrl = imageUrl)
-                    }
-
-                } else {
-                    enrichedPapers = papersFromArxiv
-                    Log.e("HomeViewModel", "Semantic Scholar batch request failed: ${semanticResponse.message()}")
-                }
-
-                emit(enrichedPapers)
+                emit(papersFromArxiv)
                 _status.value = ApiStatus.DONE
             } else {
                 _status.value = ApiStatus.ERROR
+                Log.e("HomeViewModel", "ArXiv API request failed: ${arxivResponse.message()}")
                 emit(emptyList<Paper>())
             }
         } catch (e: Exception) {
             _status.value = ApiStatus.ERROR
-            emit(emptyList<Paper>())
             Log.e("HomeViewModel", "Failed to fetch data", e)
+            emit(emptyList<Paper>())
         }
     }.combine(savedPaperDao.getAllSavedPapers()) { apiPapers, savedPapers ->
         val savedIds = savedPapers.map { it.id }.toSet()
@@ -98,13 +77,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
     private fun mapArxivEntryToPaper(entry: ArxivEntry): Paper {
         val title = entry.title.trim().replace("\\s+".toRegex(), " ")
         val abstract = entry.summary.trim().replace("\\s+".toRegex(), " ")
         val authorsList = entry.authors?.map { it.name } ?: listOf("Autore Sconosciuto")
         val keywordsString = entry.categories?.joinToString(", ") { it.term } ?: "N/A"
-        val paperId = entry.id.substringAfterLast('/').substringBefore('v')
+        val fullIdWithVersion = entry.id.trim().removePrefix("http://arxiv.org/abs/")
+        val paperId = fullIdWithVersion.substringBeforeLast('v')
 
         var paperHtmlLink: String? = null
         var paperPdfLink: String? = null

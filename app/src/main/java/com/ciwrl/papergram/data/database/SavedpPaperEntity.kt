@@ -12,6 +12,5 @@ data class SavedPaperEntity(
     val keywords: String,
     val publishedDate: String,
     val htmlLink: String?,
-    val pdfLink: String?,
-    val imageUrl: String?
+    val pdfLink: String?
 )
