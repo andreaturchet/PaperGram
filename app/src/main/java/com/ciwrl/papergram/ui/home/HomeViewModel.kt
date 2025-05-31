@@ -68,8 +68,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     val entity = SavedPaperEntity(
                         id = paper.id, title = paper.title, authors = paper.authors.joinToString(", "),
                         abstractText = paper.abstractText, keywords = paper.keywords,
-                        publishedDate = paper.publishedDate, htmlLink = paper.htmlLink, pdfLink = paper.pdfLink,
-                        imageUrl = paper.imageUrl
+                        publishedDate = paper.publishedDate, htmlLink = paper.htmlLink, pdfLink = paper.pdfLink
                     )
                     savedPaperDao.insertPaper(entity)
                 }
@@ -104,8 +103,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             keywords = keywordsString,
             publishedDate = entry.publishedDate.substringBefore("T"),
             htmlLink = paperHtmlLink,
-            pdfLink = paperPdfLink,
-            imageUrl = null
+            pdfLink = paperPdfLink
         )
     }
 }

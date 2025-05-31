@@ -55,8 +55,7 @@ class SavedFragment : Fragment() {
                     keywords = entity.keywords,
                     publishedDate = entity.publishedDate,
                     htmlLink = entity.htmlLink,
-                    pdfLink = entity.pdfLink,
-                    imageUrl = entity.imageUrl
+                    pdfLink = entity.pdfLink
                 )
                 val action = SavedFragmentDirections.actionNavSavedToPaperDetailFragment(paper)
                 findNavController().navigate(action)
