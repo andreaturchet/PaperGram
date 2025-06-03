@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.ciwrl.papergram.data.UserPreferences
 import com.ciwrl.papergram.data.database.AppDatabase
 import com.ciwrl.papergram.data.database.SavedPaperEntity
 import com.ciwrl.papergram.data.model.Paper
@@ -13,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
 
 // Stato per la UI
 data class UiPaper(val paper: Paper, val isSaved: Boolean)
@@ -25,31 +25,44 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val status: StateFlow<ApiStatus> = _status
 
     private val savedPaperDao = AppDatabase.getDatabase(application).savedPaperDao()
-    private val arxivApi = RetrofitInstance.arxivApiService
+    private val _refreshTrigger = MutableStateFlow(System.currentTimeMillis())
 
-    val papers: StateFlow<List<UiPaper>> = flow {
-        _status.value = ApiStatus.LOADING
-        try {
-            val arxivResponse = RetrofitInstance.arxivApiService.getRecentPapers(
-                searchQuery = "cat:cs.AI",
-                maxResults = 20,
-                start = 0
-            )
+    fun refreshFeed() {
+        _refreshTrigger.value = System.currentTimeMillis()
+    }
 
-            if (arxivResponse.isSuccessful && arxivResponse.body() != null) {
-                val papersFromArxiv = arxivResponse.body()?.entries?.map { mapArxivEntryToPaper(it) } ?: emptyList()
+    @OptIn(kotlinx.coroutines.FlowPreview::class)
+    val papers: StateFlow<List<UiPaper>> = _refreshTrigger.flatMapLatest {
+        flow {
+            _status.value = ApiStatus.LOADING
+            try {
+                val selectedCategories = UserPreferences.getCategories(getApplication())
+                val searchQuery = if (selectedCategories.isNotEmpty()) {
+                    selectedCategories.joinToString(separator = " OR ") { "cat:$it" }
+                } else {
+                    "cat:cs.AI"
+                }
 
-                emit(papersFromArxiv)
-                _status.value = ApiStatus.DONE
-            } else {
+                val arxivResponse = RetrofitInstance.arxivApiService.getRecentPapers(
+                    searchQuery = searchQuery,
+                    maxResults = 20,
+                    start = 0
+                )
+
+                if (arxivResponse.isSuccessful && arxivResponse.body() != null) {
+                    val papersFromArxiv = arxivResponse.body()?.entries?.map { mapArxivEntryToPaper(it) } ?: emptyList()
+                    emit(papersFromArxiv)
+                    _status.value = ApiStatus.DONE
+                } else {
+                    _status.value = ApiStatus.ERROR
+                    Log.e("HomeViewModel", "ArXiv API request failed: ${arxivResponse.message()}")
+                    emit(emptyList<Paper>())
+                }
+            } catch (e: Exception) {
                 _status.value = ApiStatus.ERROR
-                Log.e("HomeViewModel", "ArXiv API request failed: ${arxivResponse.message()}")
+                Log.e("HomeViewModel", "Failed to fetch data", e)
                 emit(emptyList<Paper>())
             }
-        } catch (e: Exception) {
-            _status.value = ApiStatus.ERROR
-            Log.e("HomeViewModel", "Failed to fetch data", e)
-            emit(emptyList<Paper>())
         }
     }.combine(savedPaperDao.getAllSavedPapers()) { apiPapers, savedPapers ->
         val savedIds = savedPapers.map { it.id }.toSet()
@@ -96,14 +109,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         return Paper(
-            id = paperId,
-            title = title,
-            authors = authorsList,
-            abstractText = abstract,
-            keywords = keywordsString,
-            publishedDate = entry.publishedDate.substringBefore("T"),
-            htmlLink = paperHtmlLink,
-            pdfLink = paperPdfLink
+            id = paperId, title = title, authors = authorsList, abstractText = abstract,
+            keywords = keywordsString, publishedDate = entry.publishedDate.substringBefore("T"),
+            htmlLink = paperHtmlLink, pdfLink = paperPdfLink
         )
     }
 }

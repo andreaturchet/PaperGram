@@ -13,6 +13,7 @@ import com.ciwrl.papergram.ui.adapter.PaperAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.fragment.app.setFragmentResultListener
 
 class FeedFragment : Fragment() {
 
@@ -29,6 +30,10 @@ class FeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+
+        setFragmentResultListener("categories_saved") { _, _ ->
+            homeViewModel.refreshFeed()
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             homeViewModel.papers.collectLatest { papers ->
