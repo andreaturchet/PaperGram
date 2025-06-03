@@ -9,7 +9,7 @@ data class Paper(
     val title: String,
     val authors: List<String>,
     val abstractText: String,
-    val keywords: String,
+    val displayCategories: List<DisplayCategory>,
     val publishedDate: String,
     val htmlLink: String?,
     val pdfLink: String?

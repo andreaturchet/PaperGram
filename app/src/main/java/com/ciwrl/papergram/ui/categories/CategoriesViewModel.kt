@@ -1,18 +1,17 @@
-
 package com.ciwrl.papergram.ui.categories
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.ciwrl.papergram.data.Datasource
 import com.ciwrl.papergram.data.UserPreferences
-import com.ciwrl.papergram.ui.adapter.UiCategory
+import com.ciwrl.papergram.ui.adapter.UiMainCategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class CategoriesViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _uiCategories = MutableStateFlow<List<UiCategory>>(emptyList())
+    private val _uiCategories = MutableStateFlow<List<UiMainCategory>>(emptyList())
     val uiCategories = _uiCategories.asStateFlow()
 
     init {
@@ -20,20 +19,24 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun loadCategories() {
-        val allCategories = Datasource.getCategories()
-        val savedCodes = UserPreferences.getCategories(getApplication())
-        _uiCategories.value = allCategories.map { category ->
-            UiCategory(
-                category = category,
-                isSelected = savedCodes.contains(category.code)
+        val allMainCategories = Datasource.getMainCategories()
+        val savedSubCategoryCodes = UserPreferences.getCategories(getApplication())
+
+        _uiCategories.value = allMainCategories.map { mainCategory ->
+            val allSubCategoriesAreSelected = mainCategory.subCategories.all { subCat ->
+                savedSubCategoryCodes.contains(subCat.code)
+            }
+            UiMainCategory(
+                mainCategory = mainCategory,
+                isSelected = allSubCategoriesAreSelected
             )
         }
     }
 
-    fun toggleCategorySelection(toggledCategory: UiCategory) {
+    fun toggleCategorySelection(toggledCategory: UiMainCategory) {
         _uiCategories.update { currentList ->
             currentList.map { uiCategory ->
-                if (uiCategory.category.code == toggledCategory.category.code) {
+                if (uiCategory.mainCategory.name == toggledCategory.mainCategory.name) {
                     uiCategory.copy(isSelected = !uiCategory.isSelected)
                 } else {
                     uiCategory
@@ -43,17 +46,20 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun saveCategories() {
-        val selectedCodes = _uiCategories.value
+        val selectedSubCategoryCodes = _uiCategories.value
             .filter { it.isSelected }
-            .map { it.category.code }
+            .flatMap { it.mainCategory.subCategories }
+            .map { it.code }
             .toSet()
-        UserPreferences.saveCategories(getApplication(), selectedCodes)
+
+        UserPreferences.saveCategories(getApplication(), selectedSubCategoryCodes)
     }
 
     fun getSelectedCodes(): Set<String> {
         return _uiCategories.value
             .filter { it.isSelected }
-            .map { it.category.code }
+            .flatMap { it.mainCategory.subCategories }
+            .map { it.code }
             .toSet()
     }
 }

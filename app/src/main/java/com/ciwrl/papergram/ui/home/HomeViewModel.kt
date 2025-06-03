@@ -4,9 +4,11 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.ciwrl.papergram.data.Datasource
 import com.ciwrl.papergram.data.UserPreferences
 import com.ciwrl.papergram.data.database.AppDatabase
 import com.ciwrl.papergram.data.database.SavedPaperEntity
+import com.ciwrl.papergram.data.model.DisplayCategory
 import com.ciwrl.papergram.data.model.Paper
 import com.ciwrl.papergram.data.model.api.ArxivEntry
 import com.ciwrl.papergram.data.network.RetrofitInstance
@@ -15,7 +17,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-// Stato per la UI
 data class UiPaper(val paper: Paper, val isSaved: Boolean)
 enum class ApiStatus { LOADING, ERROR, DONE }
 
@@ -26,6 +27,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val savedPaperDao = AppDatabase.getDatabase(application).savedPaperDao()
     private val _refreshTrigger = MutableStateFlow(System.currentTimeMillis())
+
+    private val categoryMap: Map<String, String> = Datasource.getMainCategories().flatMap { it.subCategories }.associate { it.code to it.name }
 
     fun refreshFeed() {
         _refreshTrigger.value = System.currentTimeMillis()
@@ -50,7 +53,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 )
 
                 if (arxivResponse.isSuccessful && arxivResponse.body() != null) {
-                    val papersFromArxiv = arxivResponse.body()?.entries?.map { mapArxivEntryToPaper(it) } ?: emptyList()
+                    val papersFromArxiv = arxivResponse.body()?.entries?.mapNotNull { it?.let { entry -> mapArxivEntryToPaper(entry) } } ?: emptyList()
                     emit(papersFromArxiv)
                     _status.value = ApiStatus.DONE
                 } else {
@@ -79,9 +82,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     savedPaperDao.deletePaperById(paper.id)
                 } else {
                     val entity = SavedPaperEntity(
-                        id = paper.id, title = paper.title, authors = paper.authors.joinToString(", "),
-                        abstractText = paper.abstractText, keywords = paper.keywords,
-                        publishedDate = paper.publishedDate, htmlLink = paper.htmlLink, pdfLink = paper.pdfLink
+                        id = paper.id,
+                        title = paper.title,
+                        authors = paper.authors.joinToString(", "),
+                        abstractText = paper.abstractText,
+                        keywords = paper.displayCategories.joinToString(", ") { it.name },
+                        publishedDate = paper.publishedDate,
+                        htmlLink = paper.htmlLink,
+                        pdfLink = paper.pdfLink
                     )
                     savedPaperDao.insertPaper(entity)
                 }
@@ -93,7 +101,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         val title = entry.title.trim().replace("\\s+".toRegex(), " ")
         val abstract = entry.summary.trim().replace("\\s+".toRegex(), " ")
         val authorsList = entry.authors?.map { it.name } ?: listOf("Autore Sconosciuto")
-        val keywordsString = entry.categories?.joinToString(", ") { it.term } ?: "N/A"
+
+        val categories = entry.categories?.map { category ->
+            if (categoryMap.containsKey(category.term)) {
+                DisplayCategory(name = categoryMap[category.term]!!, isTranslated = true)
+            } else {
+                DisplayCategory(name = category.term, isTranslated = false)
+            }
+        } ?: emptyList()
+
         val fullIdWithVersion = entry.id.trim().removePrefix("http://arxiv.org/abs/")
         val paperId = fullIdWithVersion.substringBeforeLast('v')
 
@@ -109,9 +125,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         return Paper(
-            id = paperId, title = title, authors = authorsList, abstractText = abstract,
-            keywords = keywordsString, publishedDate = entry.publishedDate.substringBefore("T"),
-            htmlLink = paperHtmlLink, pdfLink = paperPdfLink
+            id = paperId,
+            title = title,
+            authors = authorsList,
+            abstractText = abstract,
+            displayCategories = categories,
+            publishedDate = entry.publishedDate.substringBefore("T"),
+            htmlLink = paperHtmlLink,
+            pdfLink = paperPdfLink
         )
     }
 }

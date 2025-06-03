@@ -27,7 +27,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageButtonSave"
             android:layout_marginEnd="8dp"
-            tools:text="Titolo del Paper Molto Interessante e Lungo che Potrebbe Andare a Capo Facilmente" />
+            tools:text="Titolo del Paper Molto Interessante" />
 
         <ImageButton
             android:id="@+id/imageButtonSave"
@@ -49,41 +49,42 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:text="Autore 1, Autore 2, Autore 3, Autore Molto Lungo" />
+            tools:text="Autore 1, Autore 2, Autore 3" />
 
-        <ImageView
-            android:id="@+id/imageViewPaper"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewCategories"
             android:layout_width="0dp"
-            android:layout_height="150dp" android:layout_marginTop="12dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/placeholder_paper_image" android:contentDescription="Immagine del paper"
-            app:layout_constraintTop_toBottomOf="@+id/textViewAuthors"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/textViewAuthors"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:background="#CCCCCC"
-            android:visibility="gone" />
+            tools:listitem="@layout/item_chip" />
+
 
         <ScrollView
-        android:id="@+id/scrollViewAbstract"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewPaper"
-        app:layout_constraintBottom_toTopOf="@+id/textViewKeywords"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:fillViewport="true">
+            android:id="@+id/scrollViewAbstract"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerViewCategories"
+            app:layout_constraintBottom_toTopOf="@+id/textViewKeywords"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:fillViewport="true">
 
-        <TextView
-            android:id="@+id/textViewAbstract"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textSize="14sp"
-            android:lineSpacingMultiplier="1.1"
-            tools:text="Questo è un abstract del paper MOLTO MOLTO LUNGO... (contenuto scrollabile)" />
-    </ScrollView>
+            <TextView
+                android:id="@+id/textViewAbstract"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textSize="14sp"
+                android:lineSpacingMultiplier="1.1"
+                tools:text="Questo è un abstract del paper... (contenuto scrollabile)" />
+        </ScrollView>
 
         <TextView
             android:id="@+id/textViewKeywords"
@@ -95,7 +96,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:text="Keyword1, Keyword2, AI, Machine Learning, Scienza" />
+            tools:text="Keyword1, Keyword2, AI" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

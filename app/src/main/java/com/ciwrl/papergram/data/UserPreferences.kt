@@ -2,6 +2,7 @@ package com.ciwrl.papergram.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 object UserPreferences {
     private const val PREFS_NAME = "papergram_prefs"
@@ -12,7 +13,7 @@ object UserPreferences {
     }
 
     fun saveCategories(context: Context, categories: Set<String>) {
-        getPrefs(context).edit().putStringSet(KEY_CATEGORIES, categories).apply()
+        getPrefs(context).edit() { putStringSet(KEY_CATEGORIES, categories) }
     }
 
     fun getCategories(context: Context): Set<String> {

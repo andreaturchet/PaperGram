@@ -9,7 +9,6 @@ import com.ciwrl.papergram.R
 import com.ciwrl.papergram.data.model.Paper
 import com.ciwrl.papergram.databinding.ItemPaperCardBinding
 import com.ciwrl.papergram.ui.home.UiPaper
-import com.bumptech.glide.Glide
 
 class PaperAdapter(
     private val onPaperClick: (Paper) -> Unit,
@@ -17,8 +16,11 @@ class PaperAdapter(
 ) : ListAdapter<UiPaper, PaperAdapter.PaperViewHolder>(DiffCallback) {
 
     class PaperViewHolder(private val binding: ItemPaperCardBinding) : RecyclerView.ViewHolder(binding.root) {
+        private val chipAdapter = ChipAdapter()
+
         fun bind(uiPaper: UiPaper, onPaperClick: (Paper) -> Unit, onSaveClick: (Paper, Boolean) -> Unit) {
             val paper = uiPaper.paper
+
             binding.textViewTitle.text = paper.title
             binding.textViewAuthors.text = paper.authors.joinToString(", ")
             binding.textViewAbstract.text = paper.abstractText
@@ -30,6 +32,15 @@ class PaperAdapter(
             } else {
                 binding.imageButtonSave.setImageResource(R.drawable.ic_bookmark_border_24dp)
             }
+
+            binding.recyclerViewCategories.adapter = chipAdapter
+
+            val translatedCategoryNames = paper.displayCategories
+                .filter { it.isTranslated }
+                .map { it.name }
+
+            chipAdapter.submitList(translatedCategoryNames)
+
         }
     }
 
@@ -47,6 +58,7 @@ class PaperAdapter(
         override fun areItemsTheSame(oldItem: UiPaper, newItem: UiPaper): Boolean {
             return oldItem.paper.id == newItem.paper.id
         }
+
         override fun areContentsTheSame(oldItem: UiPaper, newItem: UiPaper): Boolean {
             return oldItem == newItem
         }

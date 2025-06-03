@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.ciwrl.papergram.data.model.DisplayCategory
 import com.ciwrl.papergram.data.model.Paper
 import com.ciwrl.papergram.databinding.FragmentSavedBinding
 import com.ciwrl.papergram.ui.adapter.SavedPaperAdapter
@@ -47,12 +48,16 @@ class SavedFragment : Fragment() {
     private fun setupRecyclerView() {
         savedPaperAdapter = SavedPaperAdapter(
             onPaperClick = { entity ->
+                val displayCategories = entity.keywords.split(", ").map { categoryName ->
+                    DisplayCategory(name = categoryName, isTranslated = true)
+                }
+
                 val paper = Paper(
                     id = entity.id,
                     title = entity.title,
                     authors = entity.authors.split(", "),
                     abstractText = entity.abstractText,
-                    keywords = entity.keywords,
+                    displayCategories = displayCategories,
                     publishedDate = entity.publishedDate,
                     htmlLink = entity.htmlLink,
                     pdfLink = entity.pdfLink

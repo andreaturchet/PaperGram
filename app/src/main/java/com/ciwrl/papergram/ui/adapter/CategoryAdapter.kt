@@ -5,24 +5,24 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.ciwrl.papergram.data.model.Category
+import com.ciwrl.papergram.data.model.MainCategory
 import com.ciwrl.papergram.databinding.ItemCategoryBinding
 
-data class UiCategory(
-    val category: Category,
+data class UiMainCategory(
+    val mainCategory: MainCategory,
     var isSelected: Boolean
 )
 
 class CategoryAdapter(
-    private val onCategoryClicked: (UiCategory) -> Unit
-) : ListAdapter<UiCategory, CategoryAdapter.CategoryViewHolder>(DiffCallback) {
+    private val onCategoryClicked: (UiMainCategory) -> Unit
+) : ListAdapter<UiMainCategory, CategoryAdapter.CategoryViewHolder>(DiffCallback) {
 
     class CategoryViewHolder(private val binding: ItemCategoryBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(uiCategory: UiCategory, onCategoryClicked: (UiCategory) -> Unit) {
-            binding.categoryChip.text = uiCategory.category.name
-            binding.categoryChip.isChecked = uiCategory.isSelected
+        fun bind(uiMainCategory: UiMainCategory, onCategoryClicked: (UiMainCategory) -> Unit) {
+            binding.categoryChip.text = uiMainCategory.mainCategory.name
+            binding.categoryChip.isChecked = uiMainCategory.isSelected
             binding.categoryChip.setOnClickListener {
-                onCategoryClicked(uiCategory)
+                onCategoryClicked(uiMainCategory)
             }
         }
     }
@@ -37,13 +37,13 @@ class CategoryAdapter(
         holder.bind(uiCategory, onCategoryClicked)
     }
 
-    companion object DiffCallback : DiffUtil.ItemCallback<UiCategory>() {
-        override fun areItemsTheSame(oldItem: UiCategory, newItem: UiCategory): Boolean {
-            return oldItem.category.code == newItem.category.code
+    companion object DiffCallback : DiffUtil.ItemCallback<UiMainCategory>() {
+        override fun areItemsTheSame(oldItem: UiMainCategory, newItem: UiMainCategory): Boolean {
+            return oldItem.mainCategory.name == newItem.mainCategory.name
         }
 
-        override fun areContentsTheSame(oldItem: UiCategory, newItem: UiCategory): Boolean {
-            return oldItem == newItem
+        override fun areContentsTheSame(oldItem: UiMainCategory, newItem: UiMainCategory): Boolean {
+            return oldItem.isSelected == newItem.isSelected
         }
     }
 }

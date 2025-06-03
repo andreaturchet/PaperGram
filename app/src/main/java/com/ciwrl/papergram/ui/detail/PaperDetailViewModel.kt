@@ -27,7 +27,7 @@ class PaperDetailViewModel(application: Application) : AndroidViewModel(applicat
                         title = paper.title,
                         authors = paper.authors.joinToString(", "),
                         abstractText = paper.abstractText,
-                        keywords = paper.keywords,
+                        keywords = paper.displayCategories.joinToString(", ") { it.name },
                         publishedDate = paper.publishedDate,
                         htmlLink = paper.htmlLink,
                         pdfLink = paper.pdfLink
