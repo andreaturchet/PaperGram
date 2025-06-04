@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.fragment.app.setFragmentResultListener
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class FeedFragment : Fragment() {
 
@@ -30,15 +32,28 @@ class FeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+        setupSwipeToRefresh()
 
         setFragmentResultListener("categories_saved") { _, _ ->
             homeViewModel.refreshFeed()
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
+            homeViewModel.status.collect { status ->
+                binding.swipeRefreshLayout.isRefreshing = status == ApiStatus.LOADING
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
             homeViewModel.papers.collectLatest { papers ->
                 paperAdapter.submitList(papers)
             }
+        }
+    }
+
+    private fun setupSwipeToRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            homeViewModel.refreshFeed()
         }
     }
 
@@ -55,6 +70,19 @@ class FeedFragment : Fragment() {
         binding.recyclerViewFeed.adapter = paperAdapter
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(binding.recyclerViewFeed)
+        binding.recyclerViewFeed.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val totalItemCount = layoutManager.itemCount
+                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                val threshold = 5
+                if (totalItemCount <= (lastVisibleItemPosition + threshold)) {
+                    homeViewModel.loadMorePapers()
+                }
+            }
+        })
     }
 
     override fun onDestroyView() {

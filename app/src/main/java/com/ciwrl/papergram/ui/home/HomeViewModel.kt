@@ -23,21 +23,40 @@ enum class ApiStatus { LOADING, ERROR, DONE }
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _status = MutableStateFlow(ApiStatus.LOADING)
-    val status: StateFlow<ApiStatus> = _status
+    val status: StateFlow<ApiStatus> = _status.asStateFlow()
 
     private val savedPaperDao = AppDatabase.getDatabase(application).savedPaperDao()
-    private val _refreshTrigger = MutableStateFlow(System.currentTimeMillis())
-
     private val categoryMap: Map<String, String> = Datasource.getMainCategories().flatMap { it.subCategories }.associate { it.code to it.name }
 
+    private val _papers = MutableStateFlow<List<UiPaper>>(emptyList())
+    val papers: StateFlow<List<UiPaper>> = _papers.asStateFlow()
+    private var currentStartIndex = 0
+    private var isCurrentlyLoading = false
+    private var hasLoadedAllItems = false
+    private val resultsPerPage = 15
+
+    init {
+        refreshFeed()
+    }
     fun refreshFeed() {
-        _refreshTrigger.value = System.currentTimeMillis()
+        currentStartIndex = 0
+        hasLoadedAllItems = false
+        _papers.value = emptyList()
+        fetchPapers()
     }
 
-    @OptIn(kotlinx.coroutines.FlowPreview::class)
-    val papers: StateFlow<List<UiPaper>> = _refreshTrigger.flatMapLatest {
-        flow {
-            _status.value = ApiStatus.LOADING
+    fun loadMorePapers() {
+        if (isCurrentlyLoading || hasLoadedAllItems) {
+            return
+        }
+        fetchPapers()
+    }
+
+    private fun fetchPapers() {
+        isCurrentlyLoading = true
+        _status.value = ApiStatus.LOADING
+
+        viewModelScope.launch {
             try {
                 val selectedCategories = UserPreferences.getCategories(getApplication())
                 val searchQuery = if (selectedCategories.isNotEmpty()) {
@@ -48,32 +67,37 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
                 val arxivResponse = RetrofitInstance.arxivApiService.getRecentPapers(
                     searchQuery = searchQuery,
-                    maxResults = 20,
-                    start = 0
+                    maxResults = resultsPerPage,
+                    start = currentStartIndex
                 )
 
                 if (arxivResponse.isSuccessful && arxivResponse.body() != null) {
-                    val papersFromArxiv = arxivResponse.body()?.entries?.mapNotNull { it?.let { entry -> mapArxivEntryToPaper(entry) } } ?: emptyList()
-                    emit(papersFromArxiv)
+                    val newPapers = arxivResponse.body()?.entries?.mapNotNull { it?.let { entry -> mapArxivEntryToPaper(entry) } } ?: emptyList()
+
+                    if (newPapers.isEmpty()) {
+                        hasLoadedAllItems = true
+                    } else {
+                        val newUiPapers = withContext(Dispatchers.IO) {
+                            newPapers.map { paper ->
+                                UiPaper(paper = paper, isSaved = savedPaperDao.isPaperSavedSync(paper.id))
+                            }
+                        }
+                        _papers.value = _papers.value + newUiPapers
+                        currentStartIndex += newPapers.size
+                    }
                     _status.value = ApiStatus.DONE
                 } else {
                     _status.value = ApiStatus.ERROR
                     Log.e("HomeViewModel", "ArXiv API request failed: ${arxivResponse.message()}")
-                    emit(emptyList<Paper>())
                 }
             } catch (e: Exception) {
                 _status.value = ApiStatus.ERROR
                 Log.e("HomeViewModel", "Failed to fetch data", e)
-                emit(emptyList<Paper>())
+            } finally {
+                isCurrentlyLoading = false
             }
         }
-    }.combine(savedPaperDao.getAllSavedPapers()) { apiPapers, savedPapers ->
-        val savedIds = savedPapers.map { it.id }.toSet()
-        apiPapers.map { paper ->
-            UiPaper(paper = paper, isSaved = savedIds.contains(paper.id))
-        }
-    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
+    }
 
     fun toggleSaveState(paper: Paper, isCurrentlySaved: Boolean) {
         viewModelScope.launch {
@@ -92,6 +116,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                         pdfLink = paper.pdfLink
                     )
                     savedPaperDao.insertPaper(entity)
+                }
+            }
+            _papers.update { currentList ->
+                currentList.map { uiPaper ->
+                    if (uiPaper.paper.id == paper.id) {
+                        uiPaper.copy(isSaved = !isCurrentlySaved)
+                    } else {
+                        uiPaper
+                    }
                 }
             }
         }

@@ -18,6 +18,9 @@ interface SavedPaperDao {
     @Query("SELECT EXISTS(SELECT 1 FROM saved_papers WHERE id = :paperId)")
     fun isPaperSaved(paperId: String): Flow<Boolean>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM saved_papers WHERE id = :paperId)")
+    fun isPaperSavedSync(paperId: String): Boolean
+
     @Query("SELECT * FROM saved_papers ORDER BY title ASC")
     fun getAllSavedPapers(): Flow<List<SavedPaperEntity>>
 }

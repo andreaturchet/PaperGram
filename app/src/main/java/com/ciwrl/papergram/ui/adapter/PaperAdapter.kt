@@ -1,5 +1,6 @@
 package com.ciwrl.papergram.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -18,6 +19,7 @@ class PaperAdapter(
     class PaperViewHolder(private val binding: ItemPaperCardBinding) : RecyclerView.ViewHolder(binding.root) {
         private val chipAdapter = ChipAdapter()
 
+        @SuppressLint("ClickableViewAccessibility")
         fun bind(uiPaper: UiPaper, onPaperClick: (Paper) -> Unit, onSaveClick: (Paper, Boolean) -> Unit) {
             val paper = uiPaper.paper
 
@@ -40,7 +42,10 @@ class PaperAdapter(
                 .map { it.name }
 
             chipAdapter.submitList(translatedCategoryNames)
-
+            binding.scrollViewAbstract.setOnTouchListener { view, motionEvent ->
+                itemView.parent?.requestDisallowInterceptTouchEvent(true)
+                false
+            }
         }
     }
 

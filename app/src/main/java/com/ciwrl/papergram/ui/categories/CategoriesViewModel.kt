@@ -2,17 +2,24 @@ package com.ciwrl.papergram.ui.categories
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.ciwrl.papergram.data.Datasource
 import com.ciwrl.papergram.data.UserPreferences
 import com.ciwrl.papergram.ui.adapter.UiMainCategory
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class CategoriesViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _uiCategories = MutableStateFlow<List<UiMainCategory>>(emptyList())
     val uiCategories = _uiCategories.asStateFlow()
+
+    private val _toastMessage = MutableSharedFlow<String>()
+    val toastMessage = _toastMessage.asSharedFlow()
 
     init {
         loadCategories()
@@ -34,12 +41,21 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun toggleCategorySelection(toggledCategory: UiMainCategory) {
-        _uiCategories.update { currentList ->
-            currentList.map { uiCategory ->
-                if (uiCategory.mainCategory.name == toggledCategory.mainCategory.name) {
-                    uiCategory.copy(isSelected = !uiCategory.isSelected)
-                } else {
-                    uiCategory
+        viewModelScope.launch {
+            val selectedCount = _uiCategories.value.count { it.isSelected }
+
+            if (selectedCount == 1 && toggledCategory.isSelected) {
+                _toastMessage.emit("Devi selezionare almeno una categoria.")
+                return@launch
+            }
+
+            _uiCategories.update { currentList ->
+                currentList.map { uiCategory ->
+                    if (uiCategory.mainCategory.name == toggledCategory.mainCategory.name) {
+                        uiCategory.copy(isSelected = !uiCategory.isSelected)
+                    } else {
+                        uiCategory
+                    }
                 }
             }
         }
@@ -51,6 +67,13 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
             .flatMap { it.mainCategory.subCategories }
             .map { it.code }
             .toSet()
+
+        if (selectedSubCategoryCodes.isEmpty()) {
+            viewModelScope.launch {
+                _toastMessage.emit("Seleziona almeno una categoria prima di salvare.")
+            }
+            return
+        }
 
         UserPreferences.saveCategories(getApplication(), selectedSubCategoryCodes)
     }

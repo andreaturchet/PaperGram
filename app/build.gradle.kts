@@ -70,5 +70,6 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.gson)
     implementation(libs.flexbox)
+    implementation(libs.androidx.swiperefreshlayout)
 
 }
