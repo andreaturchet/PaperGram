@@ -6,5 +6,6 @@ data class Category(
 
 data class MainCategory(
     val name: String,
+    val emoji: String,
     val subCategories: List<Category>
 )

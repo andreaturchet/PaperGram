@@ -42,12 +42,8 @@ class PaperAdapter(
                 .map { it.name }
 
             chipAdapter.submitList(translatedCategoryNames)
-            binding.scrollViewAbstract.setOnTouchListener { view, motionEvent ->
-                itemView.parent?.requestDisallowInterceptTouchEvent(true)
-                false
             }
         }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaperViewHolder {
         val binding = ItemPaperCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)

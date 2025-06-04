@@ -6,7 +6,7 @@ import com.ciwrl.papergram.data.model.MainCategory
 object Datasource {
     fun getMainCategories(): List<MainCategory> {
         return listOf(
-            MainCategory("Computer Science", listOf(
+            MainCategory("Computer Science","💻", listOf(
                 Category("Artificial Intelligence", "cs.AI"),
                 Category("Hardware, Software and Architecture", "cs.AR"),
                 Category("Computational Complexity", "cs.CC"),
@@ -31,7 +31,7 @@ object Datasource {
                 Category("Software Engineering", "cs.SE"),
                 Category("Computation and Language", "cs.CL")
             )),
-            MainCategory("Physics", listOf(
+            MainCategory("Physics","⚛️", listOf(
                 Category("Astrophysics", "astro-ph"),
                 Category("Condensed Matter", "cond-mat"),
                 Category("General Relativity and Quantum Cosmology", "gr-qc"),
@@ -46,7 +46,7 @@ object Datasource {
                 Category("Optics", "physics.optics"),
                 Category("Quantum Physics", "quant-ph")
             )),
-            MainCategory("Mathematics", listOf(
+            MainCategory("Mathematics","🧮", listOf(
                 Category("Algebraic Geometry", "math.AG"),
                 Category("Algebraic Topology", "math.AT"),
                 Category("Analysis of PDEs", "math.AP"),
@@ -58,32 +58,32 @@ object Datasource {
                 Category("Probability", "math.PR"),
                 Category("Statistics", "math.ST")
             )),
-            MainCategory("Biology", listOf(
+            MainCategory("Biology","🧬", listOf(
                 Category("Biomolecules", "q-bio.BM"),
                 Category("Genomics", "q-bio.GN"),
                 Category("Neurons and Cognition", "q-bio.NC"),
                 Category("Populations and Evolution", "q-bio.PE")
             )),
-            MainCategory("Finance", listOf(
+            MainCategory("Finance","📈", listOf(
                 Category("Computational Finance", "q-fin.CP"),
                 Category("General Finance", "q-fin.GN"),
                 Category("Statistical Finance", "q-fin.ST"),
                 Category("Trading and Market Microstructure", "q-fin.TR")
             )),
-            MainCategory("Statistics", listOf(
+            MainCategory("Statistics","📊", listOf(
                 Category("Applications", "stat.AP"),
                 Category("Computation", "stat.CO"),
                 Category("Methodology", "stat.ME"),
                 Category("Machine Learning", "stat.ML"),
                 Category("Statistics Theory", "stat.TH")
             )),
-            MainCategory("Engineering and Systems", listOf(
+            MainCategory("Engineering and Systems","⚙️", listOf(
                 Category("Audio and Speech Processing", "eess.AS"),
                 Category("Image and Video Processing", "eess.IV"),
                 Category("Signal Processing", "eess.SP"),
                 Category("Systems and Control", "eess.SY")
             )),
-            MainCategory("Economy", listOf(
+            MainCategory("Economy","🏛️", listOf(
                 Category("Econometrics", "econ.EM"),
                 Category("General Economics", "econ.GN"),
                 Category("Theoretical Economics", "econ.TH")

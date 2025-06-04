@@ -61,7 +61,7 @@ class CategoriesFragment : Fragment() {
         }
 
         val layoutManager = FlexboxLayoutManager(context)
-        layoutManager.justifyContent = JustifyContent.CENTER
+        layoutManager.justifyContent = JustifyContent.SPACE_AROUND
 
         binding.recyclerViewCategories.adapter = categoryAdapter
         binding.recyclerViewCategories.layoutManager = layoutManager

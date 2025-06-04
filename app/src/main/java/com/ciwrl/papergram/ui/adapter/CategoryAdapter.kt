@@ -1,5 +1,6 @@
 package com.ciwrl.papergram.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -18,8 +19,9 @@ class CategoryAdapter(
 ) : ListAdapter<UiMainCategory, CategoryAdapter.CategoryViewHolder>(DiffCallback) {
 
     class CategoryViewHolder(private val binding: ItemCategoryBinding) : RecyclerView.ViewHolder(binding.root) {
+        @SuppressLint("SetTextI18n")
         fun bind(uiMainCategory: UiMainCategory, onCategoryClicked: (UiMainCategory) -> Unit) {
-            binding.categoryChip.text = uiMainCategory.mainCategory.name
+            binding.categoryChip.text = "${uiMainCategory.mainCategory.emoji} ${uiMainCategory.mainCategory.name}"
             binding.categoryChip.isChecked = uiMainCategory.isSelected
             binding.categoryChip.setOnClickListener {
                 onCategoryClicked(uiMainCategory)
