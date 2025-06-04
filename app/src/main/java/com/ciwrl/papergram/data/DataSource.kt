@@ -7,86 +7,86 @@ object Datasource {
     fun getMainCategories(): List<MainCategory> {
         return listOf(
             MainCategory("Computer Science", listOf(
-                Category("Intelligenza Artificiale", "cs.AI"),
-                Category("Hardware, Software e Architettura", "cs.AR"),
-                Category("Complessità Computazionale", "cs.CC"),
-                Category("Ingegneria Computazionale, Finanza e Scienza", "cs.CE"),
-                Category("Geometria Computazionale", "cs.CG"),
-                Category("Teoria dei Giochi e Informatica", "cs.GT"),
-                Category("Visione Artificiale e Riconoscimento Pattern", "cs.CV"),
-                Category("Computer e Società", "cs.CY"),
-                Category("Crittografia e Sicurezza", "cs.CR"),
-                Category("Basi di Dati", "cs.DB"),
-                Category("Sistemi Distribuiti, Paralleli e Cluster", "cs.DC"),
-                Category("Logica Digitale", "cs.DL"),
-                Category("Strutture Dati e Algoritmi", "cs.DS"),
-                Category("Tecnologie Emergenti", "cs.ET"),
-                Category("Teoria Formale dei Linguaggi e degli Automi", "cs.FL"),
-                Category("Grafica Computerizzata", "cs.GR"),
-                Category("Interazione Uomo-Macchina", "cs.HC"),
-                Category("Recupero Informazioni", "cs.IR"),
-                Category("Apprendimento Automatico", "cs.LG"),
-                Category("Linguaggi di Programmazione", "cs.PL"),
-                Category("Robotica", "cs.RO"),
-                Category("Ingegneria del Software", "cs.SE"),
-                Category("Calcolo e Linguaggio", "cs.CL")
+                Category("Artificial Intelligence", "cs.AI"),
+                Category("Hardware, Software and Architecture", "cs.AR"),
+                Category("Computational Complexity", "cs.CC"),
+                Category("Computational Engineering, Finance, and Science", "cs.CE"),
+                Category("Computational Geometry", "cs.CG"),
+                Category("Computer Science and Game Theory", "cs.GT"),
+                Category("Computer Vision and Pattern Recognition", "cs.CV"),
+                Category("Computers and Society", "cs.CY"),
+                Category("Cryptography and Security", "cs.CR"),
+                Category("Databases", "cs.DB"),
+                Category("Distributed, Parallel, and Cluster Computing", "cs.DC"),
+                Category("Digital Libraries", "cs.DL"),
+                Category("Data Structures and Algorithms", "cs.DS"),
+                Category("Emerging Technologies", "cs.ET"),
+                Category("Formal Languages and Automata Theory", "cs.FL"),
+                Category("Graphics", "cs.GR"),
+                Category("Human-Computer Interaction", "cs.HC"),
+                Category("Information Retrieval", "cs.IR"),
+                Category("Machine Learning", "cs.LG"),
+                Category("Programming Languages", "cs.PL"),
+                Category("Robotics", "cs.RO"),
+                Category("Software Engineering", "cs.SE"),
+                Category("Computation and Language", "cs.CL")
             )),
-            MainCategory("Fisica", listOf(
-                Category("Astrofisica", "astro-ph"),
-                Category("Materia Condensata", "cond-mat"),
-                Category("Relatività Generale e Cosmologia Quantistica", "gr-qc"),
-                Category("Fisica delle Alte Energie (Esperimenti)", "hep-ex"),
-                Category("Fisica delle Alte Energie (Teoria di Lattice)", "hep-lat"),
-                Category("Fisica delle Alte Energie (Fenomenologia)", "hep-ph"),
-                Category("Fisica delle Alte Energie (Teoria)", "hep-th"),
-                Category("Fisica Matematica", "math-ph"),
-                Category("Fisica Nucleare (Esperimenti)", "nucl-ex"),
-                Category("Fisica Nucleare (Teoria)", "nucl-th"),
-                Category("Fisica", "physics"),
-                Category("Fotonica", "physics.optics"),
-                Category("Fisica Quantistica", "quant-ph")
+            MainCategory("Physics", listOf(
+                Category("Astrophysics", "astro-ph"),
+                Category("Condensed Matter", "cond-mat"),
+                Category("General Relativity and Quantum Cosmology", "gr-qc"),
+                Category("High Energy Physics - Experiment", "hep-ex"),
+                Category("High Energy Physics - Lattice", "hep-lat"),
+                Category("High Energy Physics - Phenomenology", "hep-ph"),
+                Category("High Energy Physics - Theory", "hep-th"),
+                Category("Mathematical Physics", "math-ph"),
+                Category("Nuclear Experiment", "nucl-ex"),
+                Category("Nuclear Theory", "nucl-th"),
+                Category("Physics", "physics"),
+                Category("Optics", "physics.optics"),
+                Category("Quantum Physics", "quant-ph")
             )),
-            MainCategory("Matematica", listOf(
-                Category("Geometria Algebrica", "math.AG"),
-                Category("Topologia Algebrica", "math.AT"),
-                Category("Analisi delle PDE", "math.AP"),
-                Category("Combinatoria", "math.CO"),
-                Category("Geometria Differenziale", "math.DG"),
-                Category("Sistemi Dinamici", "math.DS"),
-                Category("Logica", "math.LO"),
-                Category("Teoria dei Numeri", "math.NT"),
-                Category("Teoria delle Probabilità", "math.PR"),
-                Category("Statistica", "math.ST")
+            MainCategory("Mathematics", listOf(
+                Category("Algebraic Geometry", "math.AG"),
+                Category("Algebraic Topology", "math.AT"),
+                Category("Analysis of PDEs", "math.AP"),
+                Category("Combinatorics", "math.CO"),
+                Category("Differential Geometry", "math.DG"),
+                Category("Dynamical Systems", "math.DS"),
+                Category("Logic", "math.LO"),
+                Category("Number Theory", "math.NT"),
+                Category("Probability", "math.PR"),
+                Category("Statistics", "math.ST")
             )),
-            MainCategory("Biologia", listOf(
-                Category("Biomolecole", "q-bio.BM"),
-                Category("Genomica", "q-bio.GN"),
-                Category("Reti Neuronali e Cognizione", "q-bio.NC"),
-                Category("Popolazioni ed Evoluzione", "q-bio.PE")
+            MainCategory("Biology", listOf(
+                Category("Biomolecules", "q-bio.BM"),
+                Category("Genomics", "q-bio.GN"),
+                Category("Neurons and Cognition", "q-bio.NC"),
+                Category("Populations and Evolution", "q-bio.PE")
             )),
-            MainCategory("Finanza", listOf(
-                Category("Finanza Computazionale", "q-fin.CP"),
-                Category("Finanza Generale", "q-fin.GN"),
-                Category("Finanza Statistica", "q-fin.ST"),
-                Category("Trading e Microstruttura del Mercato", "q-fin.TR")
+            MainCategory("Finance", listOf(
+                Category("Computational Finance", "q-fin.CP"),
+                Category("General Finance", "q-fin.GN"),
+                Category("Statistical Finance", "q-fin.ST"),
+                Category("Trading and Market Microstructure", "q-fin.TR")
             )),
-            MainCategory("Statistica", listOf(
-                Category("Applicazioni", "stat.AP"),
-                Category("Calcolo", "stat.CO"),
-                Category("Metodologia", "stat.ME"),
-                Category("Apprendimento Automatico (Stat)", "stat.ML"),
-                Category("Teoria della Statistica", "stat.TH")
+            MainCategory("Statistics", listOf(
+                Category("Applications", "stat.AP"),
+                Category("Computation", "stat.CO"),
+                Category("Methodology", "stat.ME"),
+                Category("Machine Learning", "stat.ML"),
+                Category("Statistics Theory", "stat.TH")
             )),
-            MainCategory("Ingegneria e Sistemi", listOf(
-                Category("Elaborazione Audio e Vocale", "eess.AS"),
-                Category("Elaborazione di Immagini e Video", "eess.IV"),
-                Category("Elaborazione dei Segnali", "eess.SP"),
-                Category("Sistemi e Controllo", "eess.SY")
+            MainCategory("Engineering and Systems", listOf(
+                Category("Audio and Speech Processing", "eess.AS"),
+                Category("Image and Video Processing", "eess.IV"),
+                Category("Signal Processing", "eess.SP"),
+                Category("Systems and Control", "eess.SY")
             )),
-            MainCategory("Economia", listOf(
-                Category("Econometria", "econ.EM"),
-                Category("Economia Generale", "econ.GN"),
-                Category("Teoria Economica", "econ.TH")
+            MainCategory("Economy", listOf(
+                Category("Econometrics", "econ.EM"),
+                Category("General Economics", "econ.GN"),
+                Category("Theoretical Economics", "econ.TH")
             ))
         )
     }
