@@ -16,6 +16,7 @@ import com.ciwrl.papergram.ui.adapter.CategoryAdapter
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import kotlinx.coroutines.launch
+import android.widget.Toast
 
 class InterestSelectionFragment : Fragment(R.layout.fragment_interest_selection) {
 
@@ -33,22 +34,32 @@ class InterestSelectionFragment : Fragment(R.layout.fragment_interest_selection)
                     categoryAdapter.submitList(categories)
                 }
             }
+
         }
 
         val finishButton = view.findViewById<View>(R.id.button_finish)
         val skipButton = view.findViewById<View>(R.id.button_skip)
 
         finishButton.setOnClickListener {
-            viewModel.saveSelectedCategories()
-            goToMainActivity()
-        }
+            val anyCategorySelected = viewModel.uiCategories.value.any { it.isSelected }
 
+            if (anyCategorySelected) {
+                viewModel.saveSelectedCategories()
+                goToMainActivity()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Seleziona almeno un interesse per continuare",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
         skipButton.setOnClickListener {
             goToMainActivity()
         }
     }
 
-    private fun setupRecyclerView(view: View) {
+        private fun setupRecyclerView(view: View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view_interests)
         categoryAdapter = CategoryAdapter { clickedCategory ->
             viewModel.toggleCategorySelection(clickedCategory)
