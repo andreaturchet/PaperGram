@@ -11,6 +11,9 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.ciwrl.papergram.databinding.ActivityMainBinding
+import android.widget.TextView
+import com.ciwrl.papergram.data.UserPreferences
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,16 +34,20 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_saved, R.id.nav_categories
+                R.id.nav_home, R.id.nav_saved, R.id.nav_categories, R.id.nav_settings
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        updateNavHeader()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        return true
+    private fun updateNavHeader() {
+        val headerView = binding.navView.getHeaderView(0)
+        val userNameTextView = headerView.findViewById<TextView>(R.id.nav_header_user_name)
+        val userName = UserPreferences.getUserName(this)
+
+        userNameTextView.text = getString(R.string.nav_header_greeting, userName)
     }
 
     override fun onSupportNavigateUp(): Boolean {

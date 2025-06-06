@@ -27,13 +27,14 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="false" android:theme="@style/Theme.PaperGram.NoActionBar">
+            android:exported="false"
+            android:theme="@style/Theme.PaperGram">
         </activity>
 
         <activity
             android:name=".OnboardingActivity"
             android:exported="false"
-            android:theme="@style/Theme.PaperGram.NoActionBar" />
+            android:theme="@style/Theme.PaperGram" />
 
     </application>
 </manifest>

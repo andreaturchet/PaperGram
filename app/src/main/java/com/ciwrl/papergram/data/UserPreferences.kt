@@ -9,6 +9,7 @@ object UserPreferences {
     private const val KEY_CATEGORIES = "selected_categories"
     private const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"
     private const val KEY_USER_NAME = "user_name"
+    private const val KEY_THEME = "selected_theme"
 
     private fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -35,5 +36,13 @@ object UserPreferences {
 
     fun getUserName(context: Context): String {
         return getPrefs(context).getString(KEY_USER_NAME, "PaperGram User") ?: "PaperGram User"
+    }
+
+    fun saveTheme(context: Context, themeMode: Int) {
+        getPrefs(context).edit { putInt(KEY_THEME, themeMode) }
+    }
+
+    fun getTheme(context: Context): Int {
+        return getPrefs(context).getInt(KEY_THEME, -1)
     }
 }

@@ -43,14 +43,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:maxLines="2"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
-            tools:text="Autore 1, Autore 2, Autore 3" />
+            tools:text="Autore 1, Autore 2, Autore 3"
+            android:maxLines="2"
+            android:ellipsize="end" />
 
         <TextView
             android:id="@+id/textViewKeywords"

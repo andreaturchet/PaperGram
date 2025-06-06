@@ -1,16 +1,13 @@
 package com.ciwrl.papergram.ui.detail
 
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.pdf.PdfRenderer
-import android.net.Uri
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import android.view.*
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.core.net.toUri
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -61,10 +58,18 @@ class PaperDetailFragment : Fragment() {
         setupMenu()
         downloadAndDisplayPdf(currentPaper.pdfLink)
 
+        binding.fabSave.setOnClickListener {
+            detailViewModel.toggleSaveState(currentPaper, isCurrentlySaved)
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             detailViewModel.isPaperSaved(currentPaper.id).collectLatest { isSaved ->
                 isCurrentlySaved = isSaved
-                requireActivity().invalidateOptionsMenu()
+                if (isSaved) {
+                    binding.fabSave.setImageResource(R.drawable.baseline_bookmark_24)
+                } else {
+                    binding.fabSave.setImageResource(R.drawable.ic_bookmark_border_24dp)
+                }
             }
         }
     }
@@ -120,23 +125,12 @@ class PaperDetailFragment : Fragment() {
             }
 
             override fun onPrepareMenu(menu: Menu) {
-                super.onPrepareMenu(menu)
-                val saveItem = menu.findItem(R.id.action_save)
-                if (isCurrentlySaved) {
-                    saveItem.setIcon(R.drawable.baseline_bookmark_24)
-                } else {
-                    saveItem.setIcon(R.drawable.ic_bookmark_border_24dp)
-                }
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
-                    R.id.action_save -> {
-                        detailViewModel.toggleSaveState(currentPaper, isCurrentlySaved)
-                        true
-                    }
-                    R.id.action_open_link -> {
-                        openExternalLink()
+                    R.id.action_share -> {
+                        sharePaper()
                         true
                     }
                     else -> false
@@ -145,16 +139,30 @@ class PaperDetailFragment : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun openExternalLink() {
-        val urlToOpen = currentPaper.pdfLink ?: currentPaper.htmlLink
-        urlToOpen?.let { url ->
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-                startActivity(intent)
-            } catch (e: Exception) {
-                Log.e("PaperDetailFragment", "Errore nell'aprire l'URL: $url", e)
-            }
+    private fun sharePaper() {
+        val shareableLink = currentPaper.htmlLink ?: currentPaper.pdfLink
+        if (shareableLink == null) {
+            Toast.makeText(requireContext(), "Nessun link da condividere", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        val shareText = """
+            Dai un'occhiata a questo paper:
+            
+            *${currentPaper.title}*
+            
+            Autori: ${currentPaper.authors.joinToString(", ")}
+            
+            Link: $shareableLink
+        """.trimIndent()
+
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, "Paper interessante: ${currentPaper.title}")
+            putExtra(Intent.EXTRA_TEXT, shareText)
+        }
+
+        startActivity(Intent.createChooser(intent, "Condividi paper tramite..."))
     }
 
     override fun onDestroyView() {
