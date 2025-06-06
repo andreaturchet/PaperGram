@@ -12,7 +12,16 @@
         <action
             android:id="@+id/action_nav_home_to_paperDetailFragment"
             app:destination="@id/paperDetailFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_commentsFragment"
+            app:destination="@id/commentsFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/commentsFragment"
+        android:name="com.ciwrl.papergram.ui.comments.CommentsFragment"
+        android:label="Commenti"
+        tools:layout="@layout/fragment_comments" />
 
     <fragment
         android:id="@+id/nav_saved"

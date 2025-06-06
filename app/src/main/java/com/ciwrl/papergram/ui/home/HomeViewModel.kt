@@ -165,7 +165,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             displayCategories = categories,
             publishedDate = entry.publishedDate.substringBefore("T"),
             htmlLink = paperHtmlLink,
-            pdfLink = paperPdfLink
+            pdfLink = paperPdfLink,
+            likeCount = (20..350).random(),
+            isLikedByUser = false,
+            commentCount = (5..50).random()
         )
     }
 }

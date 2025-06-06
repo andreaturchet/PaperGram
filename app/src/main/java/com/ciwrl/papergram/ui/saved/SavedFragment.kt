@@ -60,7 +60,10 @@ class SavedFragment : Fragment() {
                     displayCategories = displayCategories,
                     publishedDate = entity.publishedDate,
                     htmlLink = entity.htmlLink,
-                    pdfLink = entity.pdfLink
+                    pdfLink = entity.pdfLink,
+                    likeCount = 0,
+                    isLikedByUser = false,
+                    commentCount = 0
                 )
                 val action = SavedFragmentDirections.actionNavSavedToPaperDetailFragment(paper)
                 findNavController().navigate(action)

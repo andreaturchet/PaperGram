@@ -4,18 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.ciwrl.papergram.databinding.FragmentFeedBinding
 import com.ciwrl.papergram.ui.adapter.PaperAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import androidx.recyclerview.widget.PagerSnapHelper
-import androidx.fragment.app.setFragmentResultListener
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 
 class FeedFragment : Fragment() {
 
@@ -65,8 +66,16 @@ class FeedFragment : Fragment() {
             },
             onSaveClick = { paper, isSaved ->
                 homeViewModel.toggleSaveState(paper, isSaved)
+            },
+            onLikeClick = { paper ->
+                Toast.makeText(requireContext(), "Like/Unlike: ${paper.title}", Toast.LENGTH_SHORT).show()
+            },
+            onCommentClick = { paper ->
+                val action = FeedFragmentDirections.actionNavHomeToCommentsFragment()
+                findNavController().navigate(action)
             }
         )
+
         binding.recyclerViewFeed.adapter = paperAdapter
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(binding.recyclerViewFeed)

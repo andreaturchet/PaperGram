@@ -12,5 +12,9 @@ data class Paper(
     val displayCategories: List<DisplayCategory>,
     val publishedDate: String,
     val htmlLink: String?,
-    val pdfLink: String?
+    val pdfLink: String?,
+    var likeCount: Int,
+    var isLikedByUser: Boolean,
+    val commentCount: Int
+
 ): Parcelable
