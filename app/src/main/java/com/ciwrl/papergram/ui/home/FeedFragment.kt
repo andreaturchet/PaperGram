@@ -15,13 +15,14 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.ciwrl.papergram.databinding.FragmentFeedBinding
 import com.ciwrl.papergram.ui.adapter.PaperAdapter
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class FeedFragment : Fragment() {
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
+
     private val homeViewModel: HomeViewModel by viewModels()
     private lateinit var paperAdapter: PaperAdapter
 
@@ -32,6 +33,7 @@ class FeedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupRecyclerView()
         setupSwipeToRefresh()
 
@@ -39,18 +41,49 @@ class FeedFragment : Fragment() {
             homeViewModel.refreshFeed()
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            homeViewModel.status.collect { status ->
-                binding.swipeRefreshLayout.isRefreshing = status == ApiStatus.LOADING
-            }
-        }
+        observeViewModel()
+    }
 
+    private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
-            homeViewModel.papers.collectLatest { papers ->
+
+            homeViewModel.status.combine(homeViewModel.papers) { status, papers ->
+                UiState(status, papers)
+            }.collect { state ->
+
+                val (status, papers) = state
+
                 paperAdapter.submitList(papers)
+
+                // Logica per lo Shimmer
+                val showShimmer = status == ApiStatus.LOADING && papers.isEmpty()
+                if (showShimmer) {
+                    binding.shimmerViewContainer.startShimmer()
+                    binding.shimmerViewContainer.visibility = View.VISIBLE
+                    binding.recyclerViewFeed.visibility = View.GONE
+                } else {
+                    binding.shimmerViewContainer.stopShimmer()
+                    binding.shimmerViewContainer.visibility = View.GONE
+                    binding.recyclerViewFeed.visibility = View.VISIBLE
+                }
+
+                // Logica per lo SwipeRefresh
+                binding.swipeRefreshLayout.isRefreshing = status == ApiStatus.LOADING && papers.isNotEmpty()
+
+                if (status == ApiStatus.DONE && papers.isEmpty()) {
+                }
+
+                if (status == ApiStatus.ERROR) {
+                    Toast.makeText(context, "Errore nel caricamento dei dati", Toast.LENGTH_SHORT).show()
+                    binding.shimmerViewContainer.stopShimmer()
+                    binding.shimmerViewContainer.visibility = View.GONE
+                }
             }
         }
     }
+
+    // Classe helper per la gestione dello stato combinato
+    data class UiState(val status: ApiStatus, val papers: List<UiPaper>)
 
     private fun setupSwipeToRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
@@ -70,7 +103,7 @@ class FeedFragment : Fragment() {
             onLikeClick = { paper ->
                 Toast.makeText(requireContext(), "Like/Unlike: ${paper.title}", Toast.LENGTH_SHORT).show()
             },
-            onCommentClick = { paper ->
+            onCommentClick = {
                 val action = FeedFragmentDirections.actionNavHomeToCommentsFragment()
                 findNavController().navigate(action)
             }
@@ -79,14 +112,15 @@ class FeedFragment : Fragment() {
         binding.recyclerViewFeed.adapter = paperAdapter
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(binding.recyclerViewFeed)
+
         binding.recyclerViewFeed.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 val totalItemCount = layoutManager.itemCount
                 val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                 val threshold = 5
+
                 if (totalItemCount <= (lastVisibleItemPosition + threshold)) {
                     homeViewModel.loadMorePapers()
                 }

@@ -71,5 +71,6 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.flexbox)
     implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.shimmer)
 
 }

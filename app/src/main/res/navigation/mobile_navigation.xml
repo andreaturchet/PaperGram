@@ -56,4 +56,5 @@
             app:argType="com.ciwrl.papergram.data.model.Paper" />
     </fragment>
 
+
 </navigation>
