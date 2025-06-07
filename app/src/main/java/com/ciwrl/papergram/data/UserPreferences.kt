@@ -10,6 +10,7 @@ object UserPreferences {
     private const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"
     private const val KEY_USER_NAME = "user_name"
     private const val KEY_THEME = "selected_theme"
+    private const val KEY_LANGUAGE = "selected_language"
 
     private fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -44,5 +45,13 @@ object UserPreferences {
 
     fun getTheme(context: Context): Int {
         return getPrefs(context).getInt(KEY_THEME, -1)
+    }
+
+    fun saveLanguage(context: Context, languageCode: String) {
+        getPrefs(context).edit { putString(KEY_LANGUAGE, languageCode) }
+    }
+
+    fun getLanguage(context: Context): String {
+        return getPrefs(context).getString(KEY_LANGUAGE, "it") ?: "it"
     }
 }

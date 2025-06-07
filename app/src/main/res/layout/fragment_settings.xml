@@ -12,7 +12,7 @@
         android:id="@+id/settings_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Impostazioni"
+        android:text="@string/Settings"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -40,7 +40,7 @@
         android:id="@+id/button_save_settings"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Salva Nome"
+        android:text="@string/save_name"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/textInputLayout_user_name"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Tema Applicazione"
+        android:text="@string/theme_app"
         android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
         app:layout_constraintTop_toBottomOf="@id/button_save_settings"
         app:layout_constraintStart_toStartOf="parent" />
@@ -70,19 +70,43 @@
             android:id="@+id/radio_light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Chiaro" />
+            android:text="@string/white" />
 
         <RadioButton
             android:id="@+id/radio_dark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Scuro" />
+            android:text="@string/dark" />
 
         <RadioButton
             android:id="@+id/radio_system"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Predefinito di sistema" />
+            android:text="@string/system_pred" />
+
+        <TextView
+            android:id="@+id/language_section_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/language"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:layout_constraintTop_toBottomOf="@id/radio_group_theme"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/text_view_language"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="16dp"
+            android:text="@string/select_lang"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            app:layout_constraintTop_toBottomOf="@id/language_section_title"
+            app:layout_constraintStart_toStartOf="parent" />
     </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,10 +1,10 @@
 [versions]
-agp = "8.9.1"
+agp = "8.4.1"
 flexbox = "3.0.0"
 glide = "4.16.0"
 gson = "2.10.1"
 kotlin = "2.0.21"
-coreKtx = "1.16.0"
+coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"

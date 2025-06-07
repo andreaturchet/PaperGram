@@ -15,4 +15,37 @@
     <string name="impostazioni">Impostazioni</string>
     <string name="paper_salvati">Paper Salvati</string>
     <string name="categorie">Categorie</string>
+    <string name="save_preferences">Salva Preferenze</string>
+    <string name="error_select_one_category">Devi selezionare almeno una categoria.</string>
+    <string name="Settings">Settings\n</string>
+    <string name="aggiungi_un_commento">Aggiungi un commento</string>
+    <string name="scegli_i_tuoi_interessi">Scegli i tuoi interessi</string>
+    <string name="end">FINITO</string>
+    <string name="skip">Salta per ora</string>
+    <string name="name">Come ti chiami?</string>
+    <string name="continua">Continua</string>
+    <string name="no_paper">Nessun paper salvato</string>
+    <string name="save_name">Salva Nome</string>
+    <string name="theme_app">Tema Applicazione</string>
+    <string name="white">Chiaro</string>
+    <string name="dark">Scuro</string>
+    <string name="system_pred">Predefinito di sistema</string>
+    <string name="sample_category">Sample Category</string>
+    <string name="username">Nome Utente</string>
+    <string name="last_update">2 ore fa</string>
+    <string name="comments">Questo è il testo del commento che può essere anche molto lungo e andare su più righe.</string>
+    <string name="reply">Rispondi</string>
+    <string name="title">Titolo del Paper Molto Interessante</string>
+    <string name="authors">Autore 1, Autore 2, Autore 3</string>
+    <string name="paper_abstrct">Questo è un abstract del paper...</string>
+    <string name="like">Like</string>
+    <string name="chip_comments">Commenti</string>
+    <string name="paper_keyword">Keyword1, Keyword2, AI</string>
+    <string name="paper_title">Titolo del Paper Scientifico Molto Lungo che Occupa Diverse Righe</string>
+    <string name="remove_fav">Rimuovi dai salvati</string>
+    <string name="pages">Pagina 1 / 10</string>
+    <string name="greetings">Ciao, Utente!</string>
+    <string name="language">Lingua</string>
+    <string name="select_lang">Seleziona Lingua</string>
+
 </resources>

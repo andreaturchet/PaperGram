@@ -26,14 +26,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginEnd="8dp"
-            tools:text="Titolo del Paper Scientifico Molto Lungo che Occupa Diverse Righe" />
+            tools:text="@string/paper_title" />
 
         <ImageButton
             android:id="@+id/imageButtonDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Rimuovi dai salvati"
+            android:contentDescription="@string/remove_fav"
             android:src="@drawable/baseline_bookmark_24"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -48,7 +48,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
-            tools:text="Autore 1, Autore 2, Autore 3"
+            tools:text="@string/authors"
             android:maxLines="2"
             android:ellipsize="end" />
 
@@ -65,7 +65,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewAuthors"
-            tools:text="Keyword1, Keyword2, AI" />
+            tools:text="@string/paper_keyword" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

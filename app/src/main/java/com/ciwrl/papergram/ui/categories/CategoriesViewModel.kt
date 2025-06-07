@@ -3,6 +3,7 @@ package com.ciwrl.papergram.ui.categories
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.ciwrl.papergram.R
 import com.ciwrl.papergram.data.Datasource
 import com.ciwrl.papergram.data.UserPreferences
 import com.ciwrl.papergram.ui.adapter.UiMainCategory
@@ -45,7 +46,8 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
             val selectedCount = _uiCategories.value.count { it.isSelected }
 
             if (selectedCount == 1 && toggledCategory.isSelected) {
-                _toastMessage.emit("Devi selezionare almeno una categoria.")
+                val message = getApplication<Application>().getString(R.string.error_select_one_category)
+                _toastMessage.emit(message)
                 return@launch
             }
 

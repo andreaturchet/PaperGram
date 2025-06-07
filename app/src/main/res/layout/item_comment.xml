@@ -32,7 +32,7 @@
                 android:textAppearance="?attr/textAppearanceTitleSmall"
                 android:textColor="?attr/colorOnSurface"
                 android:textStyle="bold"
-                tools:text="Nome Utente" />
+                tools:text="@string/username" />
 
             <TextView
                 android:id="@+id/comment_timestamp"
@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceBodySmall"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                tools:text="2 ore fa" />
+                tools:text="@string/last_update" />
         </LinearLayout>
 
         <TextView
@@ -50,7 +50,7 @@
             android:layout_marginTop="4dp"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorOnSurface"
-            tools:text="Questo è il testo del commento che può essere anche molto lungo e andare su più righe." />
+            tools:text="@string/comments" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_reply"
@@ -58,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Rispondi" />
+            android:text="@string/reply" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

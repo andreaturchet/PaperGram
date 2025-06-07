@@ -30,7 +30,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageButtonSave"
             android:layout_marginEnd="8dp"
-            tools:text="Titolo del Paper Molto Interessante" />
+            tools:text="@string/title" />
 
         <ImageButton
             android:id="@+id/imageButtonSave"
@@ -55,7 +55,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:text="Autore 1, Autore 2, Autore 3"
+            tools:text="@string/authors"
             android:maxLines="4"
             android:ellipsize="end" />
 
@@ -87,7 +87,7 @@
             app:layout_constraintTop_toBottomOf="@+id/recyclerViewCategories"
             app:layout_constraintBottom_toTopOf="@+id/social_actions_layout"
             app:layout_constraintVertical_bias="0.0"
-            tools:text="Questo è un abstract del paper..." />
+            tools:text="@string/paper_abstrct" />
 
         <LinearLayout
             android:id="@+id/social_actions_layout"
@@ -104,7 +104,7 @@
                 style="@style/Widget.Material3.Chip.Assist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Like"
+                android:text="@string/like"
                 app:chipIcon="@drawable/baseline_favorite_border_24"
                 app:chipIconVisible="true"/>
 
@@ -114,7 +114,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="Commenti"
+                android:text="@string/chip_comments"
                 app:chipIcon="@drawable/baseline_chat_bubble_24"
                 app:chipIconVisible="true"/>
         </LinearLayout>
@@ -130,7 +130,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:text="Keyword1, Keyword2, AI" />
+            tools:text="@string/paper_keyword" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -7,7 +7,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginEnd="4dp"
-    tools:text="Sample Category"
+    tools:text="@string/sample_category"
 
     android:checkable="false"
     android:clickable="false"

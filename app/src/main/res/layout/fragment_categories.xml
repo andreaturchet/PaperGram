@@ -23,7 +23,7 @@
         android:id="@+id/button_save"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Salva Preferenze"
+        android:text="@string/save_preferences"
         android:layout_margin="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

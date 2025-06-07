@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:contentDescription="Aggiungi un commento"
+        android:contentDescription="@string/aggiungi_un_commento"
         app:srcCompat="@drawable/baseline_add_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

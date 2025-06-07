@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.ciwrl.papergram.R
 import com.ciwrl.papergram.databinding.FragmentSettingsBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class SettingsFragment : Fragment() {
 
@@ -40,6 +41,13 @@ class SettingsFragment : Fragment() {
             }
         }
         setupThemeSelection()
+        setupLanguageSelection()
+    }
+
+    private fun setupLanguageSelection() {
+        binding.textViewLanguage.setOnClickListener {
+            showLanguageSelectionDialog()
+        }
     }
 
     private fun setupThemeSelection() {
@@ -57,6 +65,30 @@ class SettingsFragment : Fragment() {
             }
             viewModel.setTheme(newTheme)
         }
+    }
+
+    private fun showLanguageSelectionDialog() {
+        val languages = arrayOf("Italiano", "English")
+        val languageCodes = arrayOf("it", "en")
+
+        val currentLanguageCode = viewModel.getLanguage()
+        val checkedItem = languageCodes.indexOf(currentLanguageCode).coerceAtLeast(0)
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Seleziona Lingua")
+            .setSingleChoiceItems(languages, checkedItem) { dialog, which ->
+                val selectedLanguageCode = languageCodes[which]
+
+                viewModel.setLanguage(selectedLanguageCode)
+
+                dialog.dismiss()
+
+                requireActivity().recreate()
+            }
+            .setNegativeButton("Annulla") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     override fun onDestroyView() {
