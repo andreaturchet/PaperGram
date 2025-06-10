@@ -23,12 +23,14 @@ class CategoryAdapter(
         fun bind(uiMainCategory: UiMainCategory, onCategoryClicked: (UiMainCategory) -> Unit) {
             val context = binding.root.context
             val resources = context.resources
-            val resourceName = "cat_" + uiMainCategory.mainCategory.name.replace(" ", "_").lowercase()
+
+            val resourceName = "cat_main_" + uiMainCategory.mainCategory.name.replace(" ", "_").lowercase().replace("-", "_")
+
             val resourceId = resources.getIdentifier(resourceName, "string", context.packageName)
             val localizedCategoryName = if (resourceId != 0) {
                 context.getString(resourceId)
             } else {
-                uiMainCategory.mainCategory.name // Fallback
+                uiMainCategory.mainCategory.name // Fallback se non trova la traduzione
             }
 
             binding.categoryChip.text = "${uiMainCategory.mainCategory.emoji} $localizedCategoryName"
