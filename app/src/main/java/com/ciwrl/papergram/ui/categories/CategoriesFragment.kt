@@ -1,4 +1,3 @@
-
 package com.ciwrl.papergram.ui.categories
 
 import android.os.Bundle
@@ -24,7 +23,9 @@ class CategoriesFragment : Fragment() {
 
     private var _binding: FragmentCategoriesBinding? = null
     private val binding get() = _binding!!
+
     private val viewModel: CategoriesViewModel by viewModels()
+
     private lateinit var categoryAdapter: CategoryAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

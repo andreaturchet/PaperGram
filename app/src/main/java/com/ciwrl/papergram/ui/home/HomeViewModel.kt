@@ -1,7 +1,6 @@
 package com.ciwrl.papergram.ui.home
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ciwrl.papergram.data.Datasource
@@ -28,13 +27,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val savedPaperDao = AppDatabase.getDatabase(application).savedPaperDao()
     private val userLikeDao = AppDatabase.getDatabase(application).userLikeDao()
+    private val commentDao = AppDatabase.getDatabase(application).commentDao()
 
     private val categoryMap: Map<String, String> = Datasource.getMainCategories().flatMap { it.subCategories }.associate { it.code to it.name }
     private val _papers = MutableStateFlow<List<UiPaper>>(emptyList())
     val papers: StateFlow<List<UiPaper>> = _papers.asStateFlow()
 
+    var isCurrentlyLoading = false
     private var currentStartIndex = 0
-    private var isCurrentlyLoading = false
     private var hasLoadedAllItems = false
     private val resultsPerPage = 15
 
@@ -82,11 +82,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                         hasLoadedAllItems = true
                     } else {
                         val newUiPapers = withContext(Dispatchers.IO) {
+                            val fakeCommentCount = Datasource.getFakeComments().size
                             newArxivEntries.mapNotNull { entry ->
                                 val paperId = entry.id.substringAfterLast('/').substringBeforeLast('v')
                                 val isLiked = userLikeDao.isLikedSync(paperId)
                                 val isSaved = savedPaperDao.isPaperSavedSync(paperId)
-                                val paper = mapArxivEntryToPaper(entry, isLiked)
+                                val realCommentCount = commentDao.getCommentCountForPaperSync(paperId)
+                                val totalCommentCount = realCommentCount + fakeCommentCount
+                                val paper = mapArxivEntryToPaper(entry, isLiked, totalCommentCount)
                                 UiPaper(paper = paper, isSaved = isSaved)
                             }
                         }
@@ -96,11 +99,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     _status.value = ApiStatus.DONE
                 } else {
                     _status.value = ApiStatus.ERROR
-                    Log.e("HomeViewModel", "ArXiv API request failed: ${arxivResponse.message()}")
                 }
             } catch (e: Exception) {
                 _status.value = ApiStatus.ERROR
-                Log.e("HomeViewModel", "Failed to fetch data", e)
             } finally {
                 isCurrentlyLoading = false
             }
@@ -169,11 +170,30 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun mapArxivEntryToPaper(entry: ArxivEntry, isLiked: Boolean): Paper {
+    fun refreshCommentCountForPaper(paperId: String) {
+        viewModelScope.launch {
+            val fakeCommentCount = Datasource.getFakeComments().size
+            val newRealCount = withContext(Dispatchers.IO) {
+                commentDao.getCommentCountForPaperSync(paperId)
+            }
+            val totalCount = newRealCount + fakeCommentCount
+
+            _papers.update { currentList ->
+                currentList.map { uiPaper ->
+                    if (uiPaper.paper.id == paperId) {
+                        uiPaper.copy(paper = uiPaper.paper.copy(commentCount = totalCount))
+                    } else {
+                        uiPaper
+                    }
+                }
+            }
+        }
+    }
+
+    private fun mapArxivEntryToPaper(entry: ArxivEntry, isLiked: Boolean, commentCount: Int): Paper {
         val title = entry.title.trim().replace("\\s+".toRegex(), " ")
         val abstract = entry.summary.trim().replace("\\s+".toRegex(), " ")
         val authorsList = entry.authors?.map { it.name } ?: listOf("Autore Sconosciuto")
-
         val categories = entry.categories?.map { category ->
             if (categoryMap.containsKey(category.term)) {
                 DisplayCategory(name = categoryMap[category.term]!!, isTranslated = true)
@@ -181,9 +201,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 DisplayCategory(name = category.term, isTranslated = false)
             }
         } ?: emptyList()
-
         val paperId = entry.id.substringAfterLast('/').substringBeforeLast('v')
-
         var paperHtmlLink: String? = null
         var paperPdfLink: String? = null
 
@@ -206,7 +224,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             pdfLink = paperPdfLink,
             likeCount = (20..350).random(),
             isLikedByUser = isLiked,
-            commentCount = (5..50).random()
+            commentCount = commentCount
         )
     }
 }

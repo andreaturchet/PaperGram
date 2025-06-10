@@ -60,6 +60,9 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.viewpager2)
+
+    implementation("androidx.fragment:fragment-ktx:1.8.1")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -72,5 +75,4 @@ dependencies {
     implementation(libs.flexbox)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.shimmer)
-
 }

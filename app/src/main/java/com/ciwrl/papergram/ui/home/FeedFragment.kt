@@ -41,6 +41,13 @@ class FeedFragment : Fragment() {
             homeViewModel.refreshFeed()
         }
 
+        setFragmentResultListener("comment_added") { _, bundle ->
+            val paperId = bundle.getString("paperId")
+            if (paperId != null) {
+                homeViewModel.refreshCommentCountForPaper(paperId)
+            }
+        }
+
         observeViewModel()
     }
 

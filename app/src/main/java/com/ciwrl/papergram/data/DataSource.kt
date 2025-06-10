@@ -1,6 +1,7 @@
 package com.ciwrl.papergram.data
 
 import com.ciwrl.papergram.data.model.Category
+import com.ciwrl.papergram.data.model.Comment
 import com.ciwrl.papergram.data.model.MainCategory
 
 object Datasource {
@@ -89,5 +90,24 @@ object Datasource {
                 Category("Theoretical Economics", "econ.TH")
             ))
         )
+    }
+
+    fun getFakeComments(): List<Comment> {
+        val now = System.currentTimeMillis()
+        val fakeTopLevel = Comment(
+            id = "fake_1",
+            userName = "Marco Rossi",
+            userAvatarUrl = "",
+            timestamp = "Yesterday",
+            commentText = "Questo paper è fondamentale per chiunque lavori in questo campo. Un punto di riferimento."
+        )
+        val fakeReply = Comment(
+            id = "fake_2",
+            userName = "Giulia Bianchi",
+            userAvatarUrl = "",
+            timestamp = "2 hours ago",
+            commentText = "Concordo pienamente! L'ho citato nella mia tesi."
+        )
+        return listOf(fakeTopLevel, fakeReply)
     }
 }
