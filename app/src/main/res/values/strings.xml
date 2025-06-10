@@ -81,7 +81,7 @@
     <string name="cat_math_lo">Logica</string>
     <string name="cat_math_nt">Teoria dei Numeri</string>
     <string name="cat_math_pr">Probabilità</string>
-    <string name="cat_math_st">Statistica</string>
+    <string name="cat_math_st">Statistica (Matematica)</string>
 
     <string name="cat_main_biology">Biologia</string>
     <string name="cat_q_bio_bm">Biomolecole</string>
@@ -99,7 +99,7 @@
     <string name="cat_stat_ap">Applicazioni</string>
     <string name="cat_stat_co">Calcolo</string>
     <string name="cat_stat_me">Metodologia</string>
-    <string name="cat_stat_ml">Apprendimento Automatico</string>
+    <string name="cat_stat_ml">Apprendimento Automatico (Statistica)</string>
     <string name="cat_stat_th">Teoria della Statistica</string>
 
     <string name="cat_main_engineering_and_systems">Ingegneria e Sistemi</string>

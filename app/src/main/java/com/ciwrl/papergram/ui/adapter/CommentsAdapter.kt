@@ -8,13 +8,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ciwrl.papergram.data.model.Comment
 import com.ciwrl.papergram.databinding.ItemCommentBinding
 
-class CommentsAdapter : ListAdapter<Comment, CommentsAdapter.CommentViewHolder>(DiffCallback) {
+class CommentsAdapter(
+    private val onReplyClick: (Comment) -> Unit
+) : ListAdapter<Comment, CommentsAdapter.CommentViewHolder>(DiffCallback) {
+
 
     class CommentViewHolder(private val binding: ItemCommentBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(comment: Comment) {
+        fun bind(comment: Comment, onReplyClick: (Comment) -> Unit) {
             binding.commentUserName.text = comment.userName
             binding.commentTimestamp.text = comment.timestamp
             binding.commentText.text = comment.commentText
+
+            binding.buttonReply.setOnClickListener {
+                onReplyClick(comment)
+            }
         }
     }
 
@@ -25,8 +32,9 @@ class CommentsAdapter : ListAdapter<Comment, CommentsAdapter.CommentViewHolder>(
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         val comment = getItem(position)
-        holder.bind(comment)
+        holder.bind(comment, onReplyClick)
     }
+
 
     companion object DiffCallback : DiffUtil.ItemCallback<Comment>() {
         override fun areItemsTheSame(oldItem: Comment, newItem: Comment): Boolean {

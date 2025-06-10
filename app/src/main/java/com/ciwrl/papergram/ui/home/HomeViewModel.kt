@@ -27,9 +27,12 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val status: StateFlow<ApiStatus> = _status.asStateFlow()
 
     private val savedPaperDao = AppDatabase.getDatabase(application).savedPaperDao()
+    private val userLikeDao = AppDatabase.getDatabase(application).userLikeDao()
+
     private val categoryMap: Map<String, String> = Datasource.getMainCategories().flatMap { it.subCategories }.associate { it.code to it.name }
     private val _papers = MutableStateFlow<List<UiPaper>>(emptyList())
     val papers: StateFlow<List<UiPaper>> = _papers.asStateFlow()
+
     private var currentStartIndex = 0
     private var isCurrentlyLoading = false
     private var hasLoadedAllItems = false
@@ -38,6 +41,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     init {
         refreshFeed()
     }
+
     fun refreshFeed() {
         currentStartIndex = 0
         hasLoadedAllItems = false
@@ -72,18 +76,22 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 )
 
                 if (arxivResponse.isSuccessful && arxivResponse.body() != null) {
-                    val newPapers = arxivResponse.body()?.entries?.mapNotNull { it?.let { entry -> mapArxivEntryToPaper(entry) } } ?: emptyList()
+                    val newArxivEntries = arxivResponse.body()?.entries ?: emptyList()
 
-                    if (newPapers.isEmpty()) {
+                    if (newArxivEntries.isEmpty()) {
                         hasLoadedAllItems = true
                     } else {
                         val newUiPapers = withContext(Dispatchers.IO) {
-                            newPapers.map { paper ->
-                                UiPaper(paper = paper, isSaved = savedPaperDao.isPaperSavedSync(paper.id))
+                            newArxivEntries.mapNotNull { entry ->
+                                val paperId = entry.id.substringAfterLast('/').substringBeforeLast('v')
+                                val isLiked = userLikeDao.isLikedSync(paperId)
+                                val isSaved = savedPaperDao.isPaperSavedSync(paperId)
+                                val paper = mapArxivEntryToPaper(entry, isLiked)
+                                UiPaper(paper = paper, isSaved = isSaved)
                             }
                         }
                         _papers.value = _papers.value + newUiPapers
-                        currentStartIndex += newPapers.size
+                        currentStartIndex += newArxivEntries.size
                     }
                     _status.value = ApiStatus.DONE
                 } else {
@@ -130,7 +138,38 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun mapArxivEntryToPaper(entry: ArxivEntry): Paper {
+    fun toggleLikeState(paper: Paper) {
+        viewModelScope.launch {
+            val isCurrentlyLiked = withContext(Dispatchers.IO) {
+                userLikeDao.isLikedSync(paper.id)
+            }
+
+            withContext(Dispatchers.IO) {
+                if (isCurrentlyLiked) {
+                    userLikeDao.delete(paper.id)
+                } else {
+                    userLikeDao.insert(UserLikeEntity(paper.id))
+                }
+            }
+
+            _papers.update { currentList ->
+                currentList.map { uiPaper ->
+                    if (uiPaper.paper.id == paper.id) {
+                        val newLikeCount = if (isCurrentlyLiked) paper.likeCount - 1 else paper.likeCount + 1
+                        val newPaperState = paper.copy(
+                            isLikedByUser = !isCurrentlyLiked,
+                            likeCount = newLikeCount
+                        )
+                        uiPaper.copy(paper = newPaperState)
+                    } else {
+                        uiPaper
+                    }
+                }
+            }
+        }
+    }
+
+    private fun mapArxivEntryToPaper(entry: ArxivEntry, isLiked: Boolean): Paper {
         val title = entry.title.trim().replace("\\s+".toRegex(), " ")
         val abstract = entry.summary.trim().replace("\\s+".toRegex(), " ")
         val authorsList = entry.authors?.map { it.name } ?: listOf("Autore Sconosciuto")
@@ -143,8 +182,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
         } ?: emptyList()
 
-        val fullIdWithVersion = entry.id.trim().removePrefix("http://arxiv.org/abs/")
-        val paperId = fullIdWithVersion.substringBeforeLast('v')
+        val paperId = entry.id.substringAfterLast('/').substringBeforeLast('v')
 
         var paperHtmlLink: String? = null
         var paperPdfLink: String? = null
@@ -167,7 +205,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             htmlLink = paperHtmlLink,
             pdfLink = paperPdfLink,
             likeCount = (20..350).random(),
-            isLikedByUser = false,
+            isLikedByUser = isLiked,
             commentCount = (5..50).random()
         )
     }

@@ -101,10 +101,10 @@ class FeedFragment : Fragment() {
                 homeViewModel.toggleSaveState(paper, isSaved)
             },
             onLikeClick = { paper ->
-                Toast.makeText(requireContext(), "Like/Unlike: ${paper.title}", Toast.LENGTH_SHORT).show()
+                homeViewModel.toggleLikeState(paper)
             },
-            onCommentClick = {
-                val action = FeedFragmentDirections.actionNavHomeToCommentsFragment()
+            onCommentClick = { paper ->
+                val action = FeedFragmentDirections.actionNavHomeToCommentsFragment(paper.id)
                 findNavController().navigate(action)
             }
         )

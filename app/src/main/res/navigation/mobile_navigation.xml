@@ -21,7 +21,13 @@
         android:id="@+id/commentsFragment"
         android:name="com.ciwrl.papergram.ui.comments.CommentsFragment"
         android:label="@string/chip_comments"
-        tools:layout="@layout/fragment_comments" />
+        tools:layout="@layout/fragment_comments">
+
+        <argument
+            android:name="paperId"
+            app:argType="string" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/nav_saved"
@@ -51,9 +57,12 @@
         android:label="@string/title_paper_detail"
         tools:layout="@layout/fragment_paper_detail">
 
+
         <argument
             android:name="selectedPaper"
             app:argType="com.ciwrl.papergram.data.model.Paper" />
     </fragment>
+
+
 
 </navigation>

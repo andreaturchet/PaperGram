@@ -6,9 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ciwrl.papergram.databinding.FragmentCommentsBinding
 import com.ciwrl.papergram.ui.adapter.CommentsAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.launch
 
 class CommentsFragment : Fragment() {
 
@@ -17,6 +22,7 @@ class CommentsFragment : Fragment() {
 
     private val viewModel: CommentsViewModel by viewModels()
     private lateinit var commentsAdapter: CommentsAdapter
+    private val args: CommentsFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,22 +34,55 @@ class CommentsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupRecyclerView()
 
-        viewModel.comments.observe(viewLifecycleOwner) { comments ->
-            commentsAdapter.submitList(comments)
+        val paperId = args.paperId
+        setupRecyclerView(paperId)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getCommentsForPaper(paperId).collect { comments ->
+                commentsAdapter.submitList(comments)
+            }
         }
 
-        // Care i commenti finti
-        viewModel.loadCommentsForPaper("fake-id")
+        binding.fabAddComment.setOnClickListener {
+            showAddCommentDialog(paperId, null)
+        }
     }
 
-    private fun setupRecyclerView() {
-        commentsAdapter = CommentsAdapter()
+    private fun setupRecyclerView(paperId: String) {
+        commentsAdapter = CommentsAdapter(
+            onReplyClick = { commentToReply ->
+                showAddCommentDialog(paperId, commentToReply.userName)
+            }
+        )
         binding.recyclerViewComments.apply {
             adapter = commentsAdapter
             layoutManager = LinearLayoutManager(context)
         }
+    }
+
+    private fun showAddCommentDialog(paperId: String, replyToUserName: String?) {
+        val editText = TextInputEditText(requireContext())
+        val padding = (19 * resources.displayMetrics.density).toInt()
+        editText.setPadding(padding, padding, padding, padding)
+
+        val dialogTitle = if (replyToUserName != null) "Rispondi a $replyToUserName" else "Nuovo Commento"
+        val prefillText = if (replyToUserName != null) "@$replyToUserName " else ""
+
+        editText.setText(prefillText)
+        editText.setSelection(prefillText.length)
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(dialogTitle)
+            .setView(editText)
+            .setPositiveButton("Invia") { _, _ ->
+                val text = editText.text.toString().trim()
+                if (text.isNotBlank()) {
+                    viewModel.addComment(paperId, text)
+                }
+            }
+            .setNegativeButton("Annulla", null)
+            .show()
     }
 
     override fun onDestroyView() {

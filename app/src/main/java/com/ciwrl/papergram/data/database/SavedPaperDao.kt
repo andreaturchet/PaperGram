@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.Flow
 interface SavedPaperDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertPaper(paper: SavedPaperEntity)
-
+    suspend fun insertPaper(paper: SavedPaperEntity)
+    
     @Query("DELETE FROM saved_papers WHERE id = :paperId")
-    fun deletePaperById(paperId: String): Int
+    suspend fun deletePaperById(paperId: String): Int
 
     @Query("SELECT EXISTS(SELECT 1 FROM saved_papers WHERE id = :paperId)")
     fun isPaperSaved(paperId: String): Flow<Boolean>
