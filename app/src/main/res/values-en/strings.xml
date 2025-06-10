@@ -2,22 +2,16 @@
     <string name="app_name">PaperGram</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_greeting">Hi 👋, %1$s!</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
-
     <string name="menu_home">Feed</string>
     <string name="salva_paper">Save paper</string>
-    <string name="published_on">Published on: %1$s</string>
-    <string name="title_paper_detail">Paper Detail</string>
     <string name="impostazioni">Settings</string>
     <string name="paper_salvati">Saved Papers</string>
     <string name="categorie">Categories</string>
     <string name="save_preferences">Save Preferences</string>
     <string name="error_select_one_category">You must select at least one category.</string>
-    <string name="Settings">Settings\n</string>
+    <string name="Settings">Settings</string>
     <string name="aggiungi_un_commento">Add a comment</string>
     <string name="scegli_i_tuoi_interessi">Choose your interests</string>
     <string name="end">DONE</string>
@@ -30,21 +24,95 @@
     <string name="white">Light</string>
     <string name="dark">Dark</string>
     <string name="system_pred">System Default</string>
-    <string name="sample_category">Sample Category</string>
-    <string name="username">Username</string>
-    <string name="last_update">2 hours ago</string>
-    <string name="comments">This is the text of the comment which can also be very long and span multiple lines.</string>
     <string name="reply">Reply</string>
-    <string name="title">Very Interesting Paper Title</string>
-    <string name="authors">Author 1, Author 2, Author 3</string>
-    <string name="paper_abstrct">This is an abstract of the paper...</string>
     <string name="like">Like</string>
     <string name="chip_comments">Comments</string>
-    <string name="paper_keyword">Keyword1, Keyword2, AI</string>
-    <string name="paper_title">Very Long Scientific Paper Title That Spans Several Lines</string>
     <string name="remove_fav">Remove from saved</string>
-    <string name="pages">Page 1 / 10</string>
-    <string name="greetings">Hello, User!</string>
     <string name="language">Language</string>
     <string name="select_lang">Select Language</string>
+
+    <string name="cat_main_computer_science">Computer Science</string>
+    <string name="cat_cs_ai">Artificial Intelligence</string>
+    <string name="cat_cs_ar">Hardware, Software and Architecture</string>
+    <string name="cat_cs_cc">Computational Complexity</string>
+    <string name="cat_cs_ce">Computational Engineering, Finance, and Science</string>
+    <string name="cat_cs_cg">Computational Geometry</string>
+    <string name="cat_cs_gt">Computer Science and Game Theory</string>
+    <string name="cat_cs_cv">Computer Vision and Pattern Recognition</string>
+    <string name="cat_cs_cy">Computers and Society</string>
+    <string name="cat_cs_cr">Cryptography and Security</string>
+    <string name="cat_cs_db">Databases</string>
+    <string name="cat_cs_dc">Distributed, Parallel, and Cluster Computing</string>
+    <string name="cat_cs_dl">Digital Libraries</string>
+    <string name="cat_cs_ds">Data Structures and Algorithms</string>
+    <string name="cat_cs_et">Emerging Technologies</string>
+    <string name="cat_cs_fl">Formal Languages and Automata Theory</string>
+    <string name="cat_cs_gr">Graphics</string>
+    <string name="cat_cs_hc">Human-Computer Interaction</string>
+    <string name="cat_cs_ir">Information Retrieval</string>
+    <string name="cat_cs_lg">Machine Learning</string>
+    <string name="cat_cs_pl">Programming Languages</string>
+    <string name="cat_cs_ro">Robotics</string>
+    <string name="cat_cs_se">Software Engineering</string>
+    <string name="cat_cs_cl">Computation and Language</string>
+
+    <string name="cat_main_physics">Physics</string>
+    <string name="cat_astro_ph">Astrophysics</string>
+    <string name="cat_cond_mat">Condensed Matter</string>
+    <string name="cat_gr_qc">General Relativity and Quantum Cosmology</string>
+    <string name="cat_hep_ex">High Energy Physics - Experiment</string>
+    <string name="cat_hep_lat">High Energy Physics - Lattice</string>
+    <string name="cat_hep_ph">High Energy Physics - Phenomenology</string>
+    <string name="cat_hep_th">High Energy Physics - Theory</string>
+    <string name="cat_math_ph">Mathematical Physics</string>
+    <string name="cat_nucl_ex">Nuclear Experiment</string>
+    <string name="cat_nucl_th">Nuclear Theory</string>
+    <string name="cat_physics">Physics</string>
+    <string name="cat_physics_optics">Optics</string>
+    <string name="cat_quant_ph">Quantum Physics</string>
+
+    <string name="cat_main_mathematics">Mathematics</string>
+    <string name="cat_math_ag">Algebraic Geometry</string>
+    <string name="cat_math_at">Algebraic Topology</string>
+    <string name="cat_math_ap">Analysis of PDEs</string>
+    <string name="cat_math_co">Combinatorics</string>
+    <string name="cat_math_dg">Differential Geometry</string>
+    <string name="cat_math_ds">Dynamical Systems</string>
+    <string name="cat_math_lo">Logic</string>
+    <string name="cat_math_nt">Number Theory</string>
+    <string name="cat_math_pr">Probability</string>
+    <string name="cat_math_st">Statistics</string>
+
+    <string name="cat_main_biology">Biology</string>
+    <string name="cat_q_bio_bm">Biomolecules</string>
+    <string name="cat_q_bio_gn">Genomics</string>
+    <string name="cat_q_bio_nc">Neurons and Cognition</string>
+    <string name="cat_q_bio_pe">Populations and Evolution</string>
+
+    <string name="cat_main_finance">Finance</string>
+    <string name="cat_q_fin_cp">Computational Finance</string>
+    <string name="cat_q_fin_gn">General Finance</string>
+    <string name="cat_q_fin_st">Statistical Finance</string>
+    <string name="cat_q_fin_tr">Trading and Market Microstructure</string>
+
+    <string name="cat_main_statistics">Statistics</string>
+    <string name="cat_stat_ap">Applications</string>
+    <string name="cat_stat_co">Computation</string>
+    <string name="cat_stat_me">Methodology</string>
+    <string name="cat_stat_ml">Machine Learning</string>
+    <string name="cat_stat_th">Statistics Theory</string>
+
+    <string name="cat_main_engineering_and_systems">Engineering and Systems</string>
+    <string name="cat_eess_as">Audio and Speech Processing</string>
+    <string name="cat_eess_iv">Image and Video Processing</string>
+    <string name="cat_eess_sp">Signal Processing</string>
+    <string name="cat_eess_sy">Systems and Control</string>
+
+    <string name="cat_main_economy">Economy</string>
+    <string name="cat_econ_em">Econometrics</string>
+    <string name="cat_econ_gn">General Economics</string>
+    <string name="cat_econ_th">Theoretical Economics</string>
+
+    <string name="title_paper_detail">details</string>
+    <string name="username">username</string>
 </resources>

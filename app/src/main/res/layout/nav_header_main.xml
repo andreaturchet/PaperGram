@@ -13,7 +13,7 @@
         android:id="@+id/nav_header_user_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/greetings"
+        android:text="@string/nav_header_greeting"
         android:textAppearance="?attr/textAppearanceTitleLarge"
         android:textColor="?attr/colorOnPrimaryContainer" />
 

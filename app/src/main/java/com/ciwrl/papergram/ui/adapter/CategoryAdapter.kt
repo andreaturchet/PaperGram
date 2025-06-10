@@ -21,7 +21,18 @@ class CategoryAdapter(
     class CategoryViewHolder(private val binding: ItemCategoryBinding) : RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(uiMainCategory: UiMainCategory, onCategoryClicked: (UiMainCategory) -> Unit) {
-            binding.categoryChip.text = "${uiMainCategory.mainCategory.emoji} ${uiMainCategory.mainCategory.name}"
+            val context = binding.root.context
+            val resources = context.resources
+            val resourceName = "cat_" + uiMainCategory.mainCategory.name.replace(" ", "_").lowercase()
+            val resourceId = resources.getIdentifier(resourceName, "string", context.packageName)
+            val localizedCategoryName = if (resourceId != 0) {
+                context.getString(resourceId)
+            } else {
+                uiMainCategory.mainCategory.name // Fallback
+            }
+
+            binding.categoryChip.text = "${uiMainCategory.mainCategory.emoji} $localizedCategoryName"
+
             binding.categoryChip.isChecked = uiMainCategory.isSelected
             binding.categoryChip.setOnClickListener {
                 onCategoryClicked(uiMainCategory)

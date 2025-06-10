@@ -20,13 +20,13 @@
     <fragment
         android:id="@+id/commentsFragment"
         android:name="com.ciwrl.papergram.ui.comments.CommentsFragment"
-        android:label="Commenti"
+        android:label="@string/chip_comments"
         tools:layout="@layout/fragment_comments" />
 
     <fragment
         android:id="@+id/nav_saved"
         android:name="com.ciwrl.papergram.ui.saved.SavedFragment"
-        android:label="Paper Salvati"
+        android:label="@string/paper_salvati"
         tools:layout="@layout/fragment_saved" >
         <action
             android:id="@+id/action_nav_saved_to_paperDetailFragment"
@@ -36,25 +36,24 @@
     <fragment
         android:id="@+id/nav_settings"
         android:name="com.ciwrl.papergram.ui.settings.SettingsFragment"
-        android:label="Impostazioni"
+        android:label="@string/impostazioni"
         tools:layout="@layout/fragment_settings" />
 
     <fragment
         android:id="@+id/nav_categories"
         android:name="com.ciwrl.papergram.ui.categories.CategoriesFragment"
-        android:label="Categorie"
+        android:label="@string/categorie"
         tools:layout="@layout/fragment_categories" />
 
     <fragment
         android:id="@+id/paperDetailFragment"
         android:name="com.ciwrl.papergram.ui.detail.PaperDetailFragment"
-        android:label="Dettagli Paper"
+        android:label="@string/title_paper_detail"
         tools:layout="@layout/fragment_paper_detail">
 
         <argument
             android:name="selectedPaper"
             app:argType="com.ciwrl.papergram.data.model.Paper" />
     </fragment>
-
 
 </navigation>

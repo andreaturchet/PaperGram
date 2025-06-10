@@ -8,6 +8,7 @@ import com.ciwrl.papergram.data.Datasource
 import com.ciwrl.papergram.data.UserPreferences
 import com.ciwrl.papergram.data.database.AppDatabase
 import com.ciwrl.papergram.data.database.SavedPaperEntity
+import com.ciwrl.papergram.data.database.UserLikeEntity
 import com.ciwrl.papergram.data.model.DisplayCategory
 import com.ciwrl.papergram.data.model.Paper
 import com.ciwrl.papergram.data.model.api.ArxivEntry
@@ -27,7 +28,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val savedPaperDao = AppDatabase.getDatabase(application).savedPaperDao()
     private val categoryMap: Map<String, String> = Datasource.getMainCategories().flatMap { it.subCategories }.associate { it.code to it.name }
-
     private val _papers = MutableStateFlow<List<UiPaper>>(emptyList())
     val papers: StateFlow<List<UiPaper>> = _papers.asStateFlow()
     private var currentStartIndex = 0
