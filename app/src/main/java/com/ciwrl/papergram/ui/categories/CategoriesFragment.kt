@@ -23,9 +23,7 @@ class CategoriesFragment : Fragment() {
 
     private var _binding: FragmentCategoriesBinding? = null
     private val binding get() = _binding!!
-
     private val viewModel: CategoriesViewModel by viewModels()
-
     private lateinit var categoryAdapter: CategoryAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -43,6 +41,9 @@ class CategoriesFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiCategories.collect { categories ->
                     categoryAdapter.submitList(categories)
+
+                    val selectedCount = categories.count { it.isSelected }
+                    binding.buttonSave.isEnabled = selectedCount > 0
                 }
             }
         }
@@ -71,7 +72,6 @@ class CategoriesFragment : Fragment() {
     private fun setupSaveButton() {
         binding.buttonSave.setOnClickListener {
             if (viewModel.getSelectedCodes().isEmpty()) {
-                Toast.makeText(requireContext(), "Seleziona almeno una categoria", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

@@ -43,13 +43,6 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
 
     fun toggleCategorySelection(toggledCategory: UiMainCategory) {
         viewModelScope.launch {
-            val selectedCount = _uiCategories.value.count { it.isSelected }
-
-            if (selectedCount == 1 && toggledCategory.isSelected) {
-                val message = getApplication<Application>().getString(R.string.error_select_one_category)
-                _toastMessage.emit(message)
-                return@launch
-            }
 
             _uiCategories.update { currentList ->
                 currentList.map { uiCategory ->
