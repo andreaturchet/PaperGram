@@ -1,11 +1,12 @@
 package com.ciwrl.papergram.ui.detail
 
 import android.content.Intent
-import android.graphics.pdf.PdfRenderer
+import android.graphics.Bitmap
 import android.os.Bundle
-import android.os.ParcelFileDescriptor
 import android.util.Log
 import android.view.*
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.view.MenuHost
@@ -15,20 +16,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.ciwrl.papergram.R
 import com.ciwrl.papergram.data.model.Paper
 import com.ciwrl.papergram.databinding.FragmentPaperDetailBinding
-import com.ciwrl.papergram.ui.adapter.PdfPageAdapter
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.net.URL
 
 class PaperDetailFragment : Fragment() {
 
@@ -38,17 +30,17 @@ class PaperDetailFragment : Fragment() {
     private val detailViewModel: PaperDetailViewModel by viewModels()
 
     private lateinit var currentPaper: Paper
-    private lateinit var pdfRecyclerView: RecyclerView
-    private lateinit var pdfPageAdapter: PdfPageAdapter
-    private lateinit var progressBar: ProgressBar
-    private var pdfRenderer: PdfRenderer? = null
-    private var tempFile: File? = null
     private var isCurrentlySaved = false
+
+    private lateinit var webView: WebView
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentPaperDetailBinding.inflate(inflater, container, false)
+
+        webView = binding.root.findViewById(R.id.webView)
         progressBar = binding.root.findViewById(R.id.progressBar)
-        setupRecyclerView()
+
         return binding.root
     }
 
@@ -56,7 +48,8 @@ class PaperDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         currentPaper = args.selectedPaper
         setupMenu()
-        downloadAndDisplayPdf(currentPaper.pdfLink)
+
+        loadPdfInWebView(currentPaper.pdfLink)
 
         binding.fabSave.setOnClickListener {
             detailViewModel.toggleSaveState(currentPaper, isCurrentlySaved)
@@ -74,47 +67,39 @@ class PaperDetailFragment : Fragment() {
         }
     }
 
-    private fun setupRecyclerView() {
-        pdfRecyclerView = binding.root.findViewById(R.id.pdfRecyclerView)
-        pdfPageAdapter = PdfPageAdapter(null)
-        pdfRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        pdfRecyclerView.adapter = pdfPageAdapter
-    }
-
-    private fun downloadAndDisplayPdf(pdfUrl: String?) {
+    private fun loadPdfInWebView(pdfUrl: String?) {
         if (pdfUrl == null) {
+            progressBar.visibility = View.GONE
             Toast.makeText(requireContext(), "Link PDF non disponibile.", Toast.LENGTH_LONG).show()
             return
         }
 
-        progressBar.visibility = View.VISIBLE
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                tempFile = File(requireContext().cacheDir, "temp.pdf")
-                tempFile?.createNewFile()
+        val googleDocsUrl = "https://docs.google.com/gview?embedded=true&url=$pdfUrl"
 
-                val inputStream: InputStream = URL(pdfUrl).openStream()
-                val outputStream = FileOutputStream(tempFile)
-                inputStream.copyTo(outputStream)
-                inputStream.close()
-                outputStream.close()
+        webView.settings.javaScriptEnabled = true
+        webView.settings.builtInZoomControls = true
+        webView.settings.displayZoomControls = false
 
-                val fileDescriptor = ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)
-                pdfRenderer = PdfRenderer(fileDescriptor)
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                progressBar.visibility = View.VISIBLE
+            }
 
-                withContext(Dispatchers.Main) {
-                    progressBar.visibility = View.GONE
-                    pdfPageAdapter = PdfPageAdapter(pdfRenderer)
-                    pdfRecyclerView.adapter = pdfPageAdapter
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    progressBar.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Errore nel caricamento del PDF.", Toast.LENGTH_LONG).show()
-                    Log.e("PaperDetailFragment", "Error loading PDF", e)
-                }
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                progressBar.visibility = View.GONE
+            }
+
+            override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
+                super.onReceivedError(view, errorCode, description, failingUrl)
+                progressBar.visibility = View.GONE
+                Toast.makeText(requireContext(), "Errore nel caricamento: $description", Toast.LENGTH_SHORT).show()
             }
         }
+
+        Log.d("PaperDetailFragment", "Loading URL: $googleDocsUrl")
+        webView.loadUrl(googleDocsUrl)
     }
 
     private fun setupMenu() {
@@ -122,9 +107,6 @@ class PaperDetailFragment : Fragment() {
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.detail_menu, menu)
-            }
-
-            override fun onPrepareMenu(menu: Menu) {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -167,12 +149,7 @@ class PaperDetailFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        try {
-            pdfRenderer?.close()
-            tempFile?.delete()
-        } catch (e: Exception) {
-            Log.e("PaperDetailFragment", "Error cleaning up resources", e)
-        }
+        // Pulisce il riferimento al binding per evitare memory leak
         _binding = null
     }
 }
