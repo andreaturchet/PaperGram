@@ -7,6 +7,18 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
+/**
+ * The main Room database for the application.
+ *
+ * This database holds tables for saved papers, user likes, and comments.
+ * It is implemented as a singleton to ensure only one instance of the database is
+ * ever created.
+ *
+ * @see SavedPaperEntity
+ * @see UserLikeEntity
+ * @see CommentEntity
+ */
+
 @Database(entities = [SavedPaperEntity::class, UserLikeEntity::class, CommentEntity::class], version = 5, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 

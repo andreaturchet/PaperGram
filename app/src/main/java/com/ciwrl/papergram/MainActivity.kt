@@ -14,6 +14,13 @@ import com.ciwrl.papergram.databinding.ActivityMainBinding
 import android.widget.TextView
 import com.ciwrl.papergram.data.UserPreferences
 
+/**
+ * The main screen of the application, visible after the user has completed onboarding.
+ *
+ * This activity hosts the main navigation graph, including the [DrawerLayout] and
+ * the [NavigationView]. It is responsible for setting up the toolbar and handling
+ * top-level navigation.
+ */
 
 class MainActivity : AppCompatActivity() {
 

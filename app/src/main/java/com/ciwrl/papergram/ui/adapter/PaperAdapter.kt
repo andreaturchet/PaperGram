@@ -11,6 +11,19 @@ import com.ciwrl.papergram.data.model.Paper
 import com.ciwrl.papergram.databinding.ItemPaperCardBinding
 import com.ciwrl.papergram.ui.home.UiPaper
 
+/**
+ * A [RecyclerView.Adapter] for displaying [UiPaper] items in the main feed.
+ *
+ * It uses [ListAdapter] with a [DiffUtil.ItemCallback] for efficient updates.
+ * This adapter handles the binding of paper data to the card layout and delegates
+ * user actions (clicks, saves, likes) to the provided lambdas.
+ *
+ * @param onPaperClick Lambda to be invoked when a paper card is clicked.
+ * @param onSaveClick Lambda to be invoked when the save/bookmark icon is clicked.
+ * @param onLikeClick Lambda to be invoked when the like chip is clicked.
+ * @param onCommentClick Lambda to be invoked when the comment chip is clicked.
+ */
+
 class PaperAdapter(
     private val onPaperClick: (Paper) -> Unit,
     private val onSaveClick: (Paper, Boolean) -> Unit,

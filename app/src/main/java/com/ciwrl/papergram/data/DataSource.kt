@@ -4,7 +4,17 @@ import com.ciwrl.papergram.data.model.Category
 import com.ciwrl.papergram.data.model.Comment
 import com.ciwrl.papergram.data.model.MainCategory
 
+/**
+ * Provides static, hard-coded data for the application.
+ *
+ * This object is used to supply initial data that is not fetched from an API,
+ * such as the predefined list of ArXiv categories and fake comments for demonstration.
+ */
+
 object Datasource {
+    /**
+     * Returns the complete list of main categories and their sub-categories.
+     */
     fun getMainCategories(): List<MainCategory> {
         return listOf(
             MainCategory("Computer Science","💻", listOf(
@@ -93,6 +103,9 @@ object Datasource {
     }
 
     fun getFakeComments(): List<Comment> {
+        /**
+         * Returns a list of fake comments for placeholder or demonstration purposes.
+         */
         val now = System.currentTimeMillis()
         val fakeTopLevel = Comment(
             id = "fake_1",

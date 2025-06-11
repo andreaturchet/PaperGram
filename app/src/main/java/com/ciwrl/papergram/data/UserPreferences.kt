@@ -4,6 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 
+/**
+ * A singleton object to manage user preferences using [SharedPreferences].
+ *
+ * This class provides a centralized way to save and retrieve simple key-value data,
+ * such as the user's name, selected categories, theme, and onboarding status.
+ */
+
 object UserPreferences {
     private const val PREFS_NAME = "papergram_prefs"
     private const val KEY_CATEGORIES = "selected_categories"

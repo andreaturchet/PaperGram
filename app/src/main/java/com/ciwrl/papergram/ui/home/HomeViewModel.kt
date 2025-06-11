@@ -8,28 +8,49 @@ import com.ciwrl.papergram.data.UserPreferences
 import com.ciwrl.papergram.data.database.AppDatabase
 import com.ciwrl.papergram.data.database.SavedPaperEntity
 import com.ciwrl.papergram.data.database.UserLikeEntity
-import com.ciwrl.papergram.data.model.DisplayCategory
 import com.ciwrl.papergram.data.model.Paper
-import com.ciwrl.papergram.data.model.api.ArxivEntry
+import com.ciwrl.papergram.data.model.PaperMapper
 import com.ciwrl.papergram.data.network.RetrofitInstance
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.ciwrl.papergram.data.database.CommentDao
+import com.ciwrl.papergram.data.database.SavedPaperDao
+import com.ciwrl.papergram.data.database.UserLikeDao
 
 data class UiPaper(val paper: Paper, val isSaved: Boolean)
 enum class ApiStatus { LOADING, ERROR, DONE }
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
+/**
+ * Manages the UI state and business logic for the [FeedFragment].
+ *
+ * This ViewModel is responsible for:
+ * - Fetching papers from the ArXiv API based on user's selected categories.
+ * - Handling pagination to load more papers as the user scrolls.
+ * - Managing the loading and error states of the API calls.
+ * - Interacting with the local database to handle saving/liking papers.
+ * - Providing the list of papers to the UI via a StateFlow.
+ *
+ * @param application The application instance, required for accessing the context.
+ */
+class HomeViewModel(
+    application: Application,
+    private val savedPaperDao: SavedPaperDao,
+    private val userLikeDao: UserLikeDao,
+    private val commentDao: CommentDao
+) : AndroidViewModel(application) {
 
     private val _status = MutableStateFlow(ApiStatus.LOADING)
     val status: StateFlow<ApiStatus> = _status.asStateFlow()
 
-    private val savedPaperDao = AppDatabase.getDatabase(application).savedPaperDao()
-    private val userLikeDao = AppDatabase.getDatabase(application).userLikeDao()
-    private val commentDao = AppDatabase.getDatabase(application).commentDao()
 
     private val categoryMap: Map<String, String> = Datasource.getMainCategories().flatMap { it.subCategories }.associate { it.code to it.name }
+    private val paperMapper = PaperMapper(categoryMap) // Use the new Mapper class
+
     private val _papers = MutableStateFlow<List<UiPaper>>(emptyList())
     val papers: StateFlow<List<UiPaper>> = _papers.asStateFlow()
 
@@ -42,6 +63,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         refreshFeed()
     }
 
+    /**
+     * Resets the feed and fetches the first page of papers.
+     * Clears the current list, resets pagination, and initiates a new fetch.
+     */
     fun refreshFeed() {
         currentStartIndex = 0
         hasLoadedAllItems = false
@@ -49,6 +74,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         fetchPapers()
     }
 
+    /**
+     * Fetches the next page of papers if not already loading or all items have been loaded.
+     */
     fun loadMorePapers() {
         if (isCurrentlyLoading || hasLoadedAllItems) {
             return
@@ -66,7 +94,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 val searchQuery = if (selectedCategories.isNotEmpty()) {
                     selectedCategories.joinToString(separator = " OR ") { "cat:$it" }
                 } else {
-                    "cat:cs.AI"
+                    "cat:cs.AI" // Fallback category
                 }
 
                 val arxivResponse = RetrofitInstance.arxivApiService.getRecentPapers(
@@ -89,7 +117,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                                 val isSaved = savedPaperDao.isPaperSavedSync(paperId)
                                 val realCommentCount = commentDao.getCommentCountForPaperSync(paperId)
                                 val totalCommentCount = realCommentCount + fakeCommentCount
-                                val paper = mapArxivEntryToPaper(entry, isLiked, totalCommentCount)
+
+                                // Delegate mapping to the PaperMapper
+                                val paper = paperMapper.mapArxivEntryToPaper(entry, isLiked, totalCommentCount)
                                 UiPaper(paper = paper, isSaved = isSaved)
                             }
                         }
@@ -188,43 +218,5 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
-    }
-
-    private fun mapArxivEntryToPaper(entry: ArxivEntry, isLiked: Boolean, commentCount: Int): Paper {
-        val title = entry.title.trim().replace("\\s+".toRegex(), " ")
-        val abstract = entry.summary.trim().replace("\\s+".toRegex(), " ")
-        val authorsList = entry.authors?.map { it.name } ?: listOf("Autore Sconosciuto")
-        val categories = entry.categories?.map { category ->
-            if (categoryMap.containsKey(category.term)) {
-                DisplayCategory(name = categoryMap[category.term]!!, isTranslated = true)
-            } else {
-                DisplayCategory(name = category.term, isTranslated = false)
-            }
-        } ?: emptyList()
-        val paperId = entry.id.substringAfterLast('/').substringBeforeLast('v')
-        var paperHtmlLink: String? = null
-        var paperPdfLink: String? = null
-
-        entry.links?.forEach { link ->
-            if (link.rel == "alternate" && link.type == "text/html") {
-                paperHtmlLink = link.href
-            } else if (link.type == "application/pdf" && (link.rel == "related" || link.titleAttribute == "pdf")) {
-                paperPdfLink = link.href
-            }
-        }
-
-        return Paper(
-            id = paperId,
-            title = title,
-            authors = authorsList,
-            abstractText = abstract,
-            displayCategories = categories,
-            publishedDate = entry.publishedDate.substringBefore("T"),
-            htmlLink = paperHtmlLink,
-            pdfLink = paperPdfLink,
-            likeCount = (20..350).random(),
-            isLikedByUser = isLiked,
-            commentCount = commentCount
-        )
     }
 }

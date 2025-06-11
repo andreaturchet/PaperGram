@@ -18,12 +18,24 @@ import com.ciwrl.papergram.ui.adapter.PaperAdapter
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
+/**
+ * A [Fragment] that displays the main feed of scientific papers.
+ *
+ * This fragment is responsible for:
+ * - Observing data from [HomeViewModel] and submitting it to the [PaperAdapter].
+ * - Setting up the [RecyclerView] with a [PagerSnapHelper] for a card-style feed.
+ * - Handling user interactions like clicking on a paper, saving, liking, or commenting.
+ * - Implementing pull-to-refresh functionality.
+ */
+
 class FeedFragment : Fragment() {
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
 
-    private val homeViewModel: HomeViewModel by viewModels()
+    private val homeViewModel: HomeViewModel by viewModels {
+        HomeViewModelFactory(requireActivity().application)
+    }
     private lateinit var paperAdapter: PaperAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

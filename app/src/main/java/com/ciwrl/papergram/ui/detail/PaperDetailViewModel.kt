@@ -10,6 +10,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Manages UI state and logic for the [PaperDetailFragment].
+ *
+ * This ViewModel is responsible for:
+ * - Checking if a paper is saved in the local database.
+ * - Toggling the save state of a paper (saving or deleting it from the database).
+ *
+ * @param application The application instance, required for accessing the context.
+ */
+
 class PaperDetailViewModel(application: Application) : AndroidViewModel(application) {
 
     private val savedPaperDao = AppDatabase.getDatabase(application).savedPaperDao()

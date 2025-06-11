@@ -61,7 +61,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.viewpager2)
 
-    implementation("androidx.fragment:fragment-ktx:1.8.1")
+    implementation(libs.androidx.fragment.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -75,4 +75,10 @@ dependencies {
     implementation(libs.flexbox)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.shimmer)
+
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }
