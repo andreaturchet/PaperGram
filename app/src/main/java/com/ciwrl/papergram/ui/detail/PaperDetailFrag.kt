@@ -74,11 +74,16 @@ class PaperDetailFragment : Fragment() {
             return
         }
 
-        val googleDocsUrl = "https://docs.google.com/gview?embedded=true&url=$pdfUrl"
+        val securePdfUrl = pdfUrl.replace("http://", "https://")
+        val googleDocsUrl = "https://docs.google.com/gview?embedded=true&url=$securePdfUrl"
+
 
         webView.settings.javaScriptEnabled = true
         webView.settings.builtInZoomControls = true
         webView.settings.displayZoomControls = false
+
+        webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+
 
         webView.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
@@ -148,8 +153,16 @@ class PaperDetailFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        if (_binding != null) {
+            val webView = binding.root.findViewById<WebView>(R.id.webView)
+            (webView.parent as? ViewGroup)?.removeView(webView)
+            webView.stopLoading()
+            webView.settings.javaScriptEnabled = false
+            webView.clearHistory()
+            webView.removeAllViews()
+            webView.destroy()
+        }
         super.onDestroyView()
-        // Pulisce il riferimento al binding per evitare memory leak
         _binding = null
     }
 }
