@@ -1,11 +1,15 @@
 package com.ciwrl.papergram.ui.home
 
 import android.app.Application
+import androidx.annotation.OptIn
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import android.util.Log
 import com.ciwrl.papergram.data.Datasource
 import com.ciwrl.papergram.data.UserPreferences
-import com.ciwrl.papergram.data.database.AppDatabase
+import com.ciwrl.papergram.data.database.CommentDao
+import com.ciwrl.papergram.data.database.SavedPaperDao
+import com.ciwrl.papergram.data.database.UserLikeDao
 import com.ciwrl.papergram.data.database.SavedPaperEntity
 import com.ciwrl.papergram.data.database.UserLikeEntity
 import com.ciwrl.papergram.data.model.Paper
@@ -18,12 +22,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.ciwrl.papergram.data.database.CommentDao
-import com.ciwrl.papergram.data.database.SavedPaperDao
-import com.ciwrl.papergram.data.database.UserLikeDao
-
-data class UiPaper(val paper: Paper, val isSaved: Boolean)
-enum class ApiStatus { LOADING, ERROR, DONE }
 
 /**
  * Manages the UI state and business logic for the [FeedFragment].
@@ -37,6 +35,10 @@ enum class ApiStatus { LOADING, ERROR, DONE }
  *
  * @param application The application instance, required for accessing the context.
  */
+
+data class UiPaper(val paper: Paper, val isSaved: Boolean)
+enum class ApiStatus { LOADING, ERROR, DONE }
+
 class HomeViewModel(
     application: Application,
     private val savedPaperDao: SavedPaperDao,
@@ -47,26 +49,21 @@ class HomeViewModel(
     private val _status = MutableStateFlow(ApiStatus.LOADING)
     val status: StateFlow<ApiStatus> = _status.asStateFlow()
 
-
-    private val categoryMap: Map<String, String> = Datasource.getMainCategories().flatMap { it.subCategories }.associate { it.code to it.name }
-    private val paperMapper = PaperMapper(categoryMap) // Use the new Mapper class
-
     private val _papers = MutableStateFlow<List<UiPaper>>(emptyList())
     val papers: StateFlow<List<UiPaper>> = _papers.asStateFlow()
 
+    private val categoryMap: Map<String, String> = Datasource.getMainCategories().flatMap { it.subCategories }.associate { it.code to it.name }
+    private val paperMapper = PaperMapper(categoryMap)
+
     var isCurrentlyLoading = false
+    var hasLoadedAllItems = false
     private var currentStartIndex = 0
-    private var hasLoadedAllItems = false
     private val resultsPerPage = 15
 
     init {
         refreshFeed()
     }
 
-    /**
-     * Resets the feed and fetches the first page of papers.
-     * Clears the current list, resets pagination, and initiates a new fetch.
-     */
     fun refreshFeed() {
         currentStartIndex = 0
         hasLoadedAllItems = false
@@ -74,9 +71,6 @@ class HomeViewModel(
         fetchPapers()
     }
 
-    /**
-     * Fetches the next page of papers if not already loading or all items have been loaded.
-     */
     fun loadMorePapers() {
         if (isCurrentlyLoading || hasLoadedAllItems) {
             return
@@ -84,17 +78,32 @@ class HomeViewModel(
         fetchPapers()
     }
 
-    private fun fetchPapers() {
+    fun searchPapersByTitle(titleQuery: String) {
+        if (titleQuery.isBlank()) {
+            refreshFeed()
+            return
+        }
+
+        currentStartIndex = 0
+        hasLoadedAllItems = false
+        _papers.value = emptyList()
+
+        val apiQuery = "ti:\"$titleQuery\""
+        fetchPapers(customQuery = apiQuery)
+    }
+
+    private fun fetchPapers(customQuery: String? = null) {
+        if (isCurrentlyLoading) return
+
         isCurrentlyLoading = true
-        _status.value = ApiStatus.LOADING
+        _status.value = if (_papers.value.isEmpty()) ApiStatus.LOADING else ApiStatus.DONE
 
         viewModelScope.launch {
             try {
-                val selectedCategories = UserPreferences.getCategories(getApplication())
-                val searchQuery = if (selectedCategories.isNotEmpty()) {
-                    selectedCategories.joinToString(separator = " OR ") { "cat:$it" }
+                val searchQuery = customQuery ?: if (UserPreferences.getCategories(getApplication()).isNotEmpty()) {
+                    UserPreferences.getCategories(getApplication()).joinToString(separator = " OR ") { "cat:$it" }
                 } else {
-                    "cat:cs.AI" // Fallback category
+                    "cat:cs.AI"
                 }
 
                 val arxivResponse = RetrofitInstance.arxivApiService.getRecentPapers(
@@ -106,7 +115,7 @@ class HomeViewModel(
                 if (arxivResponse.isSuccessful && arxivResponse.body() != null) {
                     val newArxivEntries = arxivResponse.body()?.entries ?: emptyList()
 
-                    if (newArxivEntries.isEmpty()) {
+                    if (newArxivEntries.isEmpty() && currentStartIndex > 0) {
                         hasLoadedAllItems = true
                     } else {
                         val newUiPapers = withContext(Dispatchers.IO) {
@@ -118,12 +127,11 @@ class HomeViewModel(
                                 val realCommentCount = commentDao.getCommentCountForPaperSync(paperId)
                                 val totalCommentCount = realCommentCount + fakeCommentCount
 
-                                // Delegate mapping to the PaperMapper
                                 val paper = paperMapper.mapArxivEntryToPaper(entry, isLiked, totalCommentCount)
                                 UiPaper(paper = paper, isSaved = isSaved)
                             }
                         }
-                        _papers.value = _papers.value + newUiPapers
+                        _papers.update { currentList -> currentList + newUiPapers }
                         currentStartIndex += newArxivEntries.size
                     }
                     _status.value = ApiStatus.DONE
@@ -131,6 +139,7 @@ class HomeViewModel(
                     _status.value = ApiStatus.ERROR
                 }
             } catch (e: Exception) {
+                Log.e("HomeViewModel", "API call failed", e)
                 _status.value = ApiStatus.ERROR
             } finally {
                 isCurrentlyLoading = false
@@ -159,11 +168,7 @@ class HomeViewModel(
             }
             _papers.update { currentList ->
                 currentList.map { uiPaper ->
-                    if (uiPaper.paper.id == paper.id) {
-                        uiPaper.copy(isSaved = !isCurrentlySaved)
-                    } else {
-                        uiPaper
-                    }
+                    if (uiPaper.paper.id == paper.id) uiPaper.copy(isSaved = !isCurrentlySaved) else uiPaper
                 }
             }
         }
@@ -171,10 +176,7 @@ class HomeViewModel(
 
     fun toggleLikeState(paper: Paper) {
         viewModelScope.launch {
-            val isCurrentlyLiked = withContext(Dispatchers.IO) {
-                userLikeDao.isLikedSync(paper.id)
-            }
-
+            val isCurrentlyLiked = withContext(Dispatchers.IO) { userLikeDao.isLikedSync(paper.id) }
             withContext(Dispatchers.IO) {
                 if (isCurrentlyLiked) {
                     userLikeDao.delete(paper.id)
@@ -182,15 +184,11 @@ class HomeViewModel(
                     userLikeDao.insert(UserLikeEntity(paper.id))
                 }
             }
-
             _papers.update { currentList ->
                 currentList.map { uiPaper ->
                     if (uiPaper.paper.id == paper.id) {
                         val newLikeCount = if (isCurrentlyLiked) paper.likeCount - 1 else paper.likeCount + 1
-                        val newPaperState = paper.copy(
-                            isLikedByUser = !isCurrentlyLiked,
-                            likeCount = newLikeCount
-                        )
+                        val newPaperState = paper.copy(isLikedByUser = !isCurrentlyLiked, likeCount = newLikeCount)
                         uiPaper.copy(paper = newPaperState)
                     } else {
                         uiPaper
@@ -203,11 +201,8 @@ class HomeViewModel(
     fun refreshCommentCountForPaper(paperId: String) {
         viewModelScope.launch {
             val fakeCommentCount = Datasource.getFakeComments().size
-            val newRealCount = withContext(Dispatchers.IO) {
-                commentDao.getCommentCountForPaperSync(paperId)
-            }
+            val newRealCount = withContext(Dispatchers.IO) { commentDao.getCommentCountForPaperSync(paperId) }
             val totalCount = newRealCount + fakeCommentCount
-
             _papers.update { currentList ->
                 currentList.map { uiPaper ->
                     if (uiPaper.paper.id == paperId) {

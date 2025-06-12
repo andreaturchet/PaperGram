@@ -114,6 +114,10 @@
     <string name="cat_econ_th">Economia Teorica</string>
     <string name="title_paper_detail">Dettagli</string>
     <string name="username">username</string>
-    <string name="pages">page\n</string>
-    <string name="paper_keyword">keyword\n</string>
+    <string name="pages">pagina</string>
+    <string name="paper_keyword">keyword</string>
+    <string name="find">Cerca</string>
+    <string name="error">Errore nel caricamento dei dati</string>
+    <string name="reload">Ricarica</string>
+    <string name="search_hint">Cerca per titolo...</string>
 </resources>

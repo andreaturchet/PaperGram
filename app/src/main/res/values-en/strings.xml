@@ -115,4 +115,11 @@
 
     <string name="title_paper_detail">details</string>
     <string name="username">username</string>
+
+    <string name="pages">page</string>
+    <string name="paper_keyword">keyword</string>
+    <string name="find">Search</string>
+    <string name="error">Error while charging data</string>
+    <string name="reload">Reload</string>
+    <string name="search_hint">Search by title...</string>
 </resources>

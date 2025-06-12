@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.viewpager2)
 
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.media3.common.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
