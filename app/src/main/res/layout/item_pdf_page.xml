@@ -7,13 +7,19 @@
     android:gravity="center_horizontal"
     android:padding="8dp">
 
-    <ImageView
+    <com.github.chrisbanes.photoview.PhotoView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/page_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        android:contentDescription="Pagina del PDF"
-        tools:src="@tools:sample/backgrounds/scenic" />
+        android:forceDarkAllowed="false"
+        tools:ignore="UnusedAttribute"
+
+        android:background="@android:color/white"
+
+        android:contentDescription="Pagina del PDF" />
 
     <TextView
         android:id="@+id/page_number"

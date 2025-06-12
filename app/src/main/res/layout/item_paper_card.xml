@@ -106,6 +106,9 @@
                 android:layout_height="wrap_content"
                 android:text="@string/like"
                 app:chipIcon="@drawable/baseline_favorite_border_24"
+                app:chipBackgroundColor="?attr/colorSecondaryContainer"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                app:chipIconTint="?attr/colorOnSecondaryContainer"
                 app:chipIconVisible="true"/>
 
             <com.google.android.material.chip.Chip
@@ -116,6 +119,9 @@
                 android:layout_marginStart="8dp"
                 android:text="@string/chip_comments"
                 app:chipIcon="@drawable/baseline_chat_bubble_24"
+                app:chipBackgroundColor="?attr/colorSecondaryContainer"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                app:chipIconTint="?attr/colorOnSecondaryContainer"
                 app:chipIconVisible="true"/>
         </LinearLayout>
 

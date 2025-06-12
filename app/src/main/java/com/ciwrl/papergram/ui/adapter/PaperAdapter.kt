@@ -68,10 +68,10 @@ class PaperAdapter(
             binding.chipComment.text = paper.commentCount.toString()
 
             if (paper.isLikedByUser) {
-                binding.chipLike.setChipBackgroundColorResource(R.color.md_theme_light_primaryContainer)
+               // binding.chipLike.setChipBackgroundColorResource(R.color.md_theme_light_primaryContainer)
                 binding.chipLike.setChipIconResource(R.drawable.baseline_favorite_24)
             } else {
-                binding.chipLike.setChipBackgroundColorResource(R.color.md_theme_light_surfaceVariant)
+               // binding.chipLike.setChipBackgroundColorResource(R.color.md_theme_light_surfaceVariant)
                 binding.chipLike.setChipIconResource(R.drawable.baseline_favorite_border_24)
             }
 

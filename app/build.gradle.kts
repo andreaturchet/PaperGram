@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.flexbox)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.shimmer)
+    implementation("com.github.chrisbanes:PhotoView:2.3.0")
 
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.androidx.core.testing)

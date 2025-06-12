@@ -15,6 +15,6 @@
         android:layout_height="wrap_content"
         android:text="@string/nav_header_greeting"
         android:textAppearance="?attr/textAppearanceTitleLarge"
-        android:textColor="?attr/colorOnPrimaryContainer"
+        android:textColor="?attr/colorOnPrimary"
         android:textSize="@dimen/nav_header_greeting_text_size" />
 </LinearLayout>
