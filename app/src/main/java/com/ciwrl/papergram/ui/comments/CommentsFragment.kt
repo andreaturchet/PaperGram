@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ciwrl.papergram.R
 import com.ciwrl.papergram.databinding.FragmentCommentsBinding
 import com.ciwrl.papergram.ui.adapter.CommentsAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -59,7 +60,7 @@ class CommentsFragment : Fragment() {
             if (parentId != null) {
                 showAddCommentDialog(paperId, parentId, commentToReply.userName)
             } else {
-                Toast.makeText(requireContext(), "Impossibile rispondere a questo commento d'esempio", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.cannot_reply_to_example), Toast.LENGTH_SHORT).show()
             }
         }
         binding.recyclerViewComments.apply {

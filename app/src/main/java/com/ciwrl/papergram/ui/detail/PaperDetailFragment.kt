@@ -83,7 +83,7 @@ class PaperDetailFragment : Fragment() {
 
     private fun downloadAndDisplayPdf(pdfUrl: String?) {
         if (pdfUrl == null) {
-            Toast.makeText(requireContext(), "Link PDF non disponibile.", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), getString(R.string.pdf_link_not_available), Toast.LENGTH_LONG).show()
             return
         }
 
@@ -110,7 +110,7 @@ class PaperDetailFragment : Fragment() {
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     progressBar.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Errore nel caricamento del PDF.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), getString(R.string.pdf_load_error), Toast.LENGTH_LONG).show()
                     Log.e("PaperDetailFragment", "Error loading PDF", e)
                 }
             }
@@ -142,27 +142,27 @@ class PaperDetailFragment : Fragment() {
     private fun sharePaper() {
         val shareableLink = currentPaper.htmlLink ?: currentPaper.pdfLink
         if (shareableLink == null) {
-            Toast.makeText(requireContext(), "Nessun link da condividere", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.no_link_to_share), Toast.LENGTH_SHORT).show()
             return
         }
 
-        val shareText = """
-            Dai un'occhiata a questo paper:
-            
-            *${currentPaper.title}*
-            
-            Autori: ${currentPaper.authors.joinToString(", ")}
-            
-            Link: $shareableLink
-        """.trimIndent()
+        val shareText = getString(
+            R.string.share_body_text,
+            currentPaper.title,
+            currentPaper.authors.joinToString(", "),
+            shareableLink
+        )
+
+        val shareSubject = getString(R.string.share_subject, currentPaper.title)
 
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "Paper interessante: ${currentPaper.title}")
+            putExtra(Intent.EXTRA_SUBJECT, shareSubject)
             putExtra(Intent.EXTRA_TEXT, shareText)
         }
 
-        startActivity(Intent.createChooser(intent, "Condividi paper tramite..."))
+        val chooserTitle = getString(R.string.share_paper_via)
+        startActivity(Intent.createChooser(intent, chooserTitle))
     }
 
     override fun onDestroyView() {

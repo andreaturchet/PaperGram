@@ -13,6 +13,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.ciwrl.papergram.R
 import com.ciwrl.papergram.databinding.FragmentCategoriesBinding
 import com.ciwrl.papergram.ui.adapter.CategoryAdapter
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -39,11 +40,23 @@ class CategoriesFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiCategories.collect { categories ->
-                    categoryAdapter.submitList(categories)
+                launch {
+                    viewModel.uiCategories.collect { categories ->
+                        categoryAdapter.submitList(categories)
 
-                    val selectedCount = categories.count { it.isSelected }
-                    binding.buttonSave.isEnabled = selectedCount > 0
+                        val selectedCount = categories.count { it.isSelected }
+                        binding.buttonSave.isEnabled = selectedCount > 0
+                    }
+                }
+
+                launch {
+                    viewModel.toastMessage.collect { messageResId ->
+                        Toast.makeText(
+                            requireContext(),
+                            getString(messageResId),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
         }
@@ -76,7 +89,7 @@ class CategoriesFragment : Fragment() {
             }
 
             viewModel.saveCategories()
-            Toast.makeText(requireContext(), "Preferenze salvate!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.preferences_saved), Toast.LENGTH_SHORT).show()
 
             setFragmentResult("categories_saved", bundleOf())
             findNavController().navigateUp()

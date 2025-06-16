@@ -113,8 +113,8 @@
     <string name="cat_econ_gn">General Economics</string>
     <string name="cat_econ_th">Theoretical Economics</string>
 
-    <string name="title_paper_detail">details</string>
-    <string name="username">username</string>
+    <string name="title_paper_detail">  Details</string>
+    <string name="username">Username</string>
 
     <string name="pages">page</string>
     <string name="paper_keyword">keyword</string>
@@ -122,4 +122,17 @@
     <string name="error">Error while charging data</string>
     <string name="reload">Reload</string>
     <string name="search_hint">Search by title...</string>
+
+    <string name="preferences_saved">Preferenze salvate!</string>
+    <string name="select_at_least_one_interest">Select at least one interest to continue</string>
+    <string name="pdf_link_not_available">PDF link not available.</string>
+    <string name="pdf_load_error">Error loading PDF.</string>
+    <string name="no_link_to_share">No link to share.</string>
+    <string name="name_saved">Name saved!</string>
+    <string name="cannot_reply_to_example">Cannot reply to this example comment</string>
+    <string name="select_at_least_one_category_to_save">Select at least one category before saving.</string>
+    <string name="share_paper_via">Share paper via…</string>
+    <string name="share_subject">Interesting paper: %1$s</string>
+    <string name="share_body_text">Check out this paper:\n\n*%1$s*\n\nAuthors: %2$s\n\nLink: %3$s</string>
+    <string name="name_cannot_be_empty">Name cannot be empty</string>
 </resources>

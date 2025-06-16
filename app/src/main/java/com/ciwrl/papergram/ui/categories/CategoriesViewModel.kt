@@ -19,7 +19,7 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
     private val _uiCategories = MutableStateFlow<List<UiMainCategory>>(emptyList())
     val uiCategories = _uiCategories.asStateFlow()
 
-    private val _toastMessage = MutableSharedFlow<String>()
+    private val _toastMessage = MutableSharedFlow<Int>()
     val toastMessage = _toastMessage.asSharedFlow()
 
     init {
@@ -63,11 +63,11 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
             .map { it.code }
             .toSet()
 
-        if (selectedSubCategoryCodes.isEmpty()) {
-            viewModelScope.launch {
-                _toastMessage.emit("Seleziona almeno una categoria prima di salvare.")
-            }
-            return
+            if (selectedSubCategoryCodes.isEmpty()) {
+                viewModelScope.launch {
+                    _toastMessage.emit(R.string.select_at_least_one_category_to_save)
+                }
+                return
         }
 
         UserPreferences.saveCategories(getApplication(), selectedSubCategoryCodes)

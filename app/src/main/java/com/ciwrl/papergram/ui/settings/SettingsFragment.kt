@@ -33,11 +33,12 @@ class SettingsFragment : Fragment() {
         binding.editTextUserName.setText(viewModel.getUserName())
         binding.buttonSaveSettings.setOnClickListener {
             val newName = binding.editTextUserName.text.toString().trim()
-            if (newName.isNotEmpty()) {
+            if (newName.isNotEmpty()) { binding.textInputLayoutUserName.error = null
+
                 viewModel.saveUserName(newName)
-                Toast.makeText(requireContext(), "Nome salvato!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.name_saved), Toast.LENGTH_SHORT).show()
             } else {
-                binding.editTextUserName.error = "Il nome non può essere vuoto"
+                binding.textInputLayoutUserName.error = getString(R.string.name_cannot_be_empty)
             }
         }
         setupThemeSelection()

@@ -120,4 +120,17 @@
     <string name="error">Errore nel caricamento dei dati</string>
     <string name="reload">Ricarica</string>
     <string name="search_hint">Cerca per titolo...</string>
+
+    <string name="preferences_saved">Preferenze salvate!</string>
+    <string name="select_at_least_one_interest">Seleziona almeno un interesse per continuare</string>
+    <string name="pdf_link_not_available">Link PDF non disponibile.</string>
+    <string name="pdf_load_error">Errore nel caricamento del PDF.</string>
+    <string name="no_link_to_share">Nessun link da condividere.</string>
+    <string name="name_saved">Nome salvato!</string>
+    <string name="cannot_reply_to_example">Impossibile rispondere a questo commento d\'esempio</string>
+    <string name="select_at_least_one_category_to_save">Seleziona almeno una categoria prima di salvare.</string>
+    <string name="share_paper_via">Condividi paper tramite…</string>
+    <string name="share_subject">Paper interessante: %1$s</string>
+    <string name="share_body_text">Dai un\'occhiata a questo paper:\n\n*%1$s*\n\nAutori: %2$s\n\nLink: %3$s</string>
+    <string name="name_cannot_be_empty">Il nome non può essere vuoto</string>
 </resources>

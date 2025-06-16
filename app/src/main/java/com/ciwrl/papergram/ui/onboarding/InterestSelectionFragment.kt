@@ -47,11 +47,7 @@ class InterestSelectionFragment : Fragment(R.layout.fragment_interest_selection)
                 viewModel.saveSelectedCategories()
                 goToMainActivity()
             } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Seleziona almeno un interesse per continuare",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(requireContext(), getString(R.string.select_at_least_one_interest), Toast.LENGTH_SHORT).show()
             }
         }
         skipButton.setOnClickListener {
