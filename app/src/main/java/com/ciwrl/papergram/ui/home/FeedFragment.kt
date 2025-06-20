@@ -2,9 +2,6 @@ package com.ciwrl.papergram.ui.home
 
 import android.os.Bundle
 import android.view.*
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -13,6 +10,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
@@ -20,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ciwrl.papergram.R
 import com.ciwrl.papergram.databinding.FragmentFeedBinding
 import com.ciwrl.papergram.ui.adapter.PaperAdapter
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 /**
@@ -50,7 +47,6 @@ class FeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Setup delle varie parti del Fragment
         setupMenu()
         setupRecyclerView()
         setupSwipeToRefresh()
@@ -59,99 +55,57 @@ class FeedFragment : Fragment() {
         setFragmentResultListener("categories_saved") { _, _ ->
             homeViewModel.refreshFeed()
         }
-
         setFragmentResultListener("comment_added") { _, bundle ->
             val paperId = bundle.getString("paperId")
             if (paperId != null) {
                 homeViewModel.refreshCommentCountForPaper(paperId)
             }
         }
+        setFragmentResultListener("feed_mode_changed") { _, _ ->
+            homeViewModel.refreshFeed()
+        }
 
         observeViewModel()
     }
 
-    private fun setupReloadButton() {
-        val reloadButton = view?.findViewById<Button>(R.id.button_reload)
-        reloadButton?.setOnClickListener {
-            homeViewModel.refreshFeed()
-        }
-    }
-
-    private fun setupMenu() {
-        val menuHost: MenuHost = requireActivity()
-
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.feed_menu, menu)
-
-                val searchItem = menu.findItem(R.id.action_search)
-                val searchView = searchItem.actionView as? SearchView
-
-                searchView?.queryHint = getString(R.string.search_hint)
-
-                searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                    override fun onQueryTextSubmit(query: String?): Boolean {
-                        query?.let {
-                            if (it.isNotBlank()) {
-                                searchView.clearFocus()
-                                homeViewModel.searchPapersByTitle(it)
-                            }
-                        }
-                        return true
-                    }
-
-                    override fun onQueryTextChange(newText: String?): Boolean {
-                        return true
-                    }
-                })
-
-                searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-                    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                        return true // Permetti l'espansione
-                    }
-
-                    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                        homeViewModel.refreshFeed()
-                        return true // Permetti la chiusura
-                    }
-                })
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return false
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
-            homeViewModel.status.combine(homeViewModel.papers) { status, papers ->
-                UiState(status, papers)
-            }.collect { state ->
-                val (status, papers) = state
-                paperAdapter.submitList(papers)
-
-                val errorLayout = view?.findViewById<LinearLayout>(R.id.error_layout)
-
-                val showShimmer = status == ApiStatus.LOADING && papers.isEmpty()
-                binding.shimmerViewContainer.visibility = if (showShimmer) View.VISIBLE else View.GONE
-                if (showShimmer) binding.shimmerViewContainer.startShimmer() else binding.shimmerViewContainer.stopShimmer()
-
-                binding.recyclerViewFeed.visibility = if (status == ApiStatus.DONE || papers.isNotEmpty()) View.VISIBLE else View.GONE
-
-                val showError = status == ApiStatus.ERROR && papers.isEmpty()
-                errorLayout?.visibility = if (showError) View.VISIBLE else View.GONE
-
-                binding.swipeRefreshLayout.isRefreshing = status == ApiStatus.LOADING && papers.isNotEmpty()
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                homeViewModel.papers.collect { papers ->
+                    paperAdapter.submitList(papers)
+                    binding.recyclerViewFeed.visibility = if (papers.isNotEmpty()) View.VISIBLE else View.GONE
+                }
             }
         }
-    }
 
-    data class UiState(val status: ApiStatus, val papers: List<UiPaper>)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                homeViewModel.status.collect { status ->
+                    val isLoading = status == ApiStatus.LOADING
+                    val showError = status == ApiStatus.ERROR
 
-    private fun setupSwipeToRefresh() {
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            homeViewModel.refreshFeed()
+                    // Show shimmer only on initial load
+                    if (isLoading && binding.recyclerViewFeed.adapter?.itemCount == 0) {
+                        binding.shimmerViewContainer.startShimmer()
+                        binding.shimmerViewContainer.visibility = View.VISIBLE
+                        binding.recyclerViewFeed.visibility = View.GONE
+                        binding.errorLayout.visibility = View.GONE
+                    } else {
+                        binding.shimmerViewContainer.stopShimmer()
+                        binding.shimmerViewContainer.visibility = View.GONE
+                    }
+
+                    binding.swipeRefreshLayout.isRefreshing = isLoading
+
+                    // Show error only if the list is empty
+                    if (showError && binding.recyclerViewFeed.adapter?.itemCount == 0) {
+                        binding.errorLayout.visibility = View.VISIBLE
+                        binding.recyclerViewFeed.visibility = View.GONE
+                    } else {
+                        binding.errorLayout.visibility = View.GONE
+                    }
+                }
+            }
         }
     }
 
@@ -161,12 +115,8 @@ class FeedFragment : Fragment() {
                 val action = FeedFragmentDirections.actionNavHomeToPaperDetailFragment(paper)
                 findNavController().navigate(action)
             },
-            onSaveClick = { paper, isSaved ->
-                homeViewModel.toggleSaveState(paper, isSaved)
-            },
-            onLikeClick = { paper ->
-                homeViewModel.toggleLikeState(paper)
-            },
+            onSaveClick = { paper, isSaved -> homeViewModel.toggleSaveState(paper, isSaved) },
+            onLikeClick = { paper -> homeViewModel.toggleLikeState(paper) },
             onCommentClick = { paper ->
                 val action = FeedFragmentDirections.actionNavHomeToCommentsFragment(paper.id)
                 findNavController().navigate(action)
@@ -174,8 +124,7 @@ class FeedFragment : Fragment() {
         )
 
         binding.recyclerViewFeed.adapter = paperAdapter
-        val snapHelper = PagerSnapHelper()
-        snapHelper.attachToRecyclerView(binding.recyclerViewFeed)
+        PagerSnapHelper().attachToRecyclerView(binding.recyclerViewFeed)
 
         binding.recyclerViewFeed.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -183,13 +132,50 @@ class FeedFragment : Fragment() {
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 val totalItemCount = layoutManager.itemCount
                 val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-                val threshold = 5
 
-                if (!homeViewModel.isCurrentlyLoading && !homeViewModel.hasLoadedAllItems && totalItemCount <= (lastVisibleItemPosition + threshold)) {
+                // Trigger load more when the user is near the end of the list
+                if (totalItemCount > 0 && lastVisibleItemPosition >= totalItemCount - 5) {
                     homeViewModel.loadMorePapers()
                 }
             }
         })
+    }
+
+    private fun setupSwipeToRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            homeViewModel.refreshFeed()
+        }
+    }
+
+    private fun setupReloadButton() {
+        binding.buttonReload.setOnClickListener {
+            homeViewModel.refreshFeed()
+        }
+    }
+
+    private fun setupMenu() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.feed_menu, menu)
+                val searchItem = menu.findItem(R.id.action_search)
+                val searchView = searchItem.actionView as? SearchView
+                searchView?.queryHint = getString(R.string.search_hint)
+                searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextSubmit(query: String?): Boolean {
+                        query?.let {
+                            if (it.isNotBlank()) {
+                                searchView.clearFocus()
+                                // La ricerca non è implementata in questo ViewModel, andrebbe aggiunta una funzione apposita
+                            }
+                        }
+                        return true
+                    }
+                    override fun onQueryTextChange(newText: String?): Boolean { return true }
+                })
+            }
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean { return false }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     override fun onDestroyView() {

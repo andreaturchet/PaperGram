@@ -18,6 +18,10 @@ object UserPreferences {
     private const val KEY_USER_NAME = "user_name"
     private const val KEY_THEME = "selected_theme"
     private const val KEY_LANGUAGE = "selected_language"
+    private const val KEY_FEED_MODE = "feed_mode"
+
+    const val FEED_MODE_CHRONOLOGICAL = "chronological"
+    const val FEED_MODE_RANDOM = "random"
 
     private fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -60,5 +64,13 @@ object UserPreferences {
 
     fun getLanguage(context: Context): String {
         return getPrefs(context).getString(KEY_LANGUAGE, "it") ?: "it"
+    }
+
+    fun saveFeedMode(context: Context, mode: String) {
+        getPrefs(context).edit { putString(KEY_FEED_MODE, mode) }
+    }
+
+    fun getFeedMode(context: Context): String {
+        return getPrefs(context).getString(KEY_FEED_MODE, FEED_MODE_CHRONOLOGICAL) ?: FEED_MODE_CHRONOLOGICAL
     }
 }

@@ -119,7 +119,7 @@
     <string name="find">Cerca</string>
     <string name="error">Errore nel caricamento dei dati</string>
     <string name="reload">Ricarica</string>
-    <string name="search_hint">Cerca per titolo...</string>
+    <string name="search_hint">Cerca per titolo…</string>
 
     <string name="preferences_saved">Preferenze salvate!</string>
     <string name="select_at_least_one_interest">Seleziona almeno un interesse per continuare</string>
@@ -133,4 +133,8 @@
     <string name="share_subject">Paper interessante: %1$s</string>
     <string name="share_body_text">Dai un\'occhiata a questo paper:\n\n*%1$s*\n\nAutori: %2$s\n\nLink: %3$s</string>
     <string name="name_cannot_be_empty">Il nome non può essere vuoto</string>
+
+    <string name="settings_feed_mode_title">Modalità del Feed</string>
+    <string name="settings_feed_mode_chronological">Cronologico (Più Recenti)</string>
+    <string name="settings_feed_mode_random">Casuale (Scoperta)</string>
 </resources>

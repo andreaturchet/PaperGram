@@ -14,6 +14,23 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+/**
+ * Manages UI state and business logic for the [CommentsFragment].
+ *
+ * This ViewModel is responsible for:
+ * - Loading hierarchical comment threads (top-level comments and their replies) for a
+ * specific paper from the local Room database via [CommentDao].
+ * - Combining real comments with a set of hard-coded "fake" comments from [Datasource]
+ * for demonstration purposes.
+ * - Handling the creation and insertion of new comments, including replies to existing ones,
+ * into the local database.
+ * - Exposing the final list of comment threads to the UI using a [StateFlow].
+ * - Mapping database entities ([CommentEntity]) to UI models ([Comment]), including
+ * formatting timestamps for display.
+ *
+ * @param application The application instance, required for accessing the context.
+ */
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class CommentsViewModel(application: Application) : AndroidViewModel(application) {
 

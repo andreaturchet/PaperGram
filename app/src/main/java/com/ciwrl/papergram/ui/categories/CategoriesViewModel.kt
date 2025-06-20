@@ -14,6 +14,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/**
+ * Manages UI state and business logic for the [CategoriesFragment].
+ *
+ * This ViewModel is responsible for:
+ * - Loading the complete list of main categories from [Datasource].
+ * - Synchronizing the selection state of categories with the user's saved preferences
+ * from [UserPreferences].
+ * - Providing the list of categories and their selection state to the UI via a StateFlow.
+ * - Handling user interactions, such as toggling a category's selection.
+ * - Persisting the final selection of categories back to [UserPreferences].
+ *
+ * @param application The application instance, required for accessing the context.
+ */
+
 class CategoriesViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _uiCategories = MutableStateFlow<List<UiMainCategory>>(emptyList())
@@ -63,11 +77,11 @@ class CategoriesViewModel(application: Application) : AndroidViewModel(applicati
             .map { it.code }
             .toSet()
 
-            if (selectedSubCategoryCodes.isEmpty()) {
-                viewModelScope.launch {
-                    _toastMessage.emit(R.string.select_at_least_one_category_to_save)
-                }
-                return
+        if (selectedSubCategoryCodes.isEmpty()) {
+            viewModelScope.launch {
+                _toastMessage.emit(R.string.select_at_least_one_category_to_save)
+            }
+            return
         }
 
         UserPreferences.saveCategories(getApplication(), selectedSubCategoryCodes)

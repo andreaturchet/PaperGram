@@ -9,6 +9,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+/**
+ * Manages UI state and business logic for the [InterestSelectionFragment] during the
+ * initial onboarding process.
+ *
+ * This ViewModel is responsible for:
+ * - Loading the complete list of available categories from [Datasource].
+ * - Initializing all categories with a default unselected state for the first-time user.
+ * - Tracking user selections as they interact with the UI via [toggleCategorySelection].
+ * - Exposing the list of categories and their current selection state via a StateFlow.
+ * - Persisting the user's final list of interests to [UserPreferences] upon completion
+ * of this onboarding step.
+ *
+ * @param application The application instance, required for accessing the context.
+ * @see CategoriesViewModel which handles category management *after* the onboarding is complete.
+ */
+
 class InterestSelectionViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _uiCategories = MutableStateFlow<List<UiMainCategory>>(emptyList())

@@ -121,7 +121,7 @@
     <string name="find">Search</string>
     <string name="error">Error while charging data</string>
     <string name="reload">Reload</string>
-    <string name="search_hint">Search by title...</string>
+    <string name="search_hint">Search by title…</string>
 
     <string name="preferences_saved">Preferenze salvate!</string>
     <string name="select_at_least_one_interest">Select at least one interest to continue</string>
@@ -135,4 +135,8 @@
     <string name="share_subject">Interesting paper: %1$s</string>
     <string name="share_body_text">Check out this paper:\n\n*%1$s*\n\nAuthors: %2$s\n\nLink: %3$s</string>
     <string name="name_cannot_be_empty">Name cannot be empty</string>
+
+    <string name="settings_feed_mode_title">Feed Mode</string>
+    <string name="settings_feed_mode_chronological">Chronological (Most Recent)</string>
+    <string name="settings_feed_mode_random">Random (Discovery)</string>
 </resources>

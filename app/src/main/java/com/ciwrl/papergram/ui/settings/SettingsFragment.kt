@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.ciwrl.papergram.R
+import com.ciwrl.papergram.data.UserPreferences
 import com.ciwrl.papergram.databinding.FragmentSettingsBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -43,6 +46,7 @@ class SettingsFragment : Fragment() {
         }
         setupThemeSelection()
         setupLanguageSelection()
+        setupFeedModeSelection()
     }
 
     private fun setupLanguageSelection() {
@@ -90,6 +94,22 @@ class SettingsFragment : Fragment() {
                 dialog.dismiss()
             }
             .show()
+    }
+
+    private fun setupFeedModeSelection() {
+        when (viewModel.getFeedMode()) {
+            UserPreferences.FEED_MODE_RANDOM -> binding.radioRandom.isChecked = true
+            else -> binding.radioChronological.isChecked = true
+        }
+
+        binding.radioGroupFeedMode.setOnCheckedChangeListener { _, checkedId ->
+            val newMode = when (checkedId) {
+                R.id.radio_random -> UserPreferences.FEED_MODE_RANDOM
+                else -> UserPreferences.FEED_MODE_CHRONOLOGICAL
+            }
+            viewModel.saveFeedMode(newMode)
+            setFragmentResult("feed_mode_changed", bundleOf())
+        }
     }
 
     override fun onDestroyView() {
