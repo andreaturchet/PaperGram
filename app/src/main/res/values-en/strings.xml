@@ -136,7 +136,26 @@
     <string name="share_body_text">Check out this paper:\n\n*%1$s*\n\nAuthors: %2$s\n\nLink: %3$s</string>
     <string name="name_cannot_be_empty">Name cannot be empty</string>
 
+    <string name="settings_category_general">General</string>
+    <string name="settings_category_appearance">Appearance</string>
+
+    <string name="settings_account_title">Account</string>
+    <string name="settings_account_summary">Edit your user name</string>
+    <string name="settings_account_dialog_title">Enter your name</string>
+
+    <string name="settings_feed_title">Feed</string>
+    <string name="settings_feed_summary">Choose how papers are displayed</string>
+    <string name="settings_feed_dialog_title">Choose a mode</string>
+
+    <string name="settings_theme_title">Theme</string>
+    <string name="settings_theme_summary">Choose light, dark, or system theme</string>
+    <string name="settings_theme_dialog_title">Choose a theme</string>
+
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_summary">Select the application language</string>
+
     <string name="settings_feed_mode_title">Feed Mode</string>
     <string name="settings_feed_mode_chronological">Chronological (Most Recent)</string>
     <string name="settings_feed_mode_random">Random (Discovery)</string>
+
 </resources>

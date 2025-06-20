@@ -1,0 +1,21 @@
+<resources>
+    <string-array name="theme_entries">
+        <item>Chiaro</item>
+        <item>Scuro</item>
+        <item>Predefinito di sistema</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>1</item>
+        <item>2</item>
+        <item>-1</item>
+    </string-array>
+
+    <string-array name="feed_mode_entries">
+        <item>Cronologico (Più Recenti)</item>
+        <item>Casuale (Scoperta)</item>
+    </string-array>
+    <string-array name="feed_mode_values">
+        <item>chronological</item>
+        <item>random</item>
+    </string-array>
+</resources>

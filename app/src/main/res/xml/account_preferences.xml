@@ -1,0 +1,8 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <EditTextPreference
+        app:key="user_name"
+        app:title="@string/settings_account_title"
+        app:summary="@string/settings_account_summary"
+        app:dialogTitle="@string/settings_account_dialog_title"
+        app:defaultValue="PaperGram User" />
+</PreferenceScreen>

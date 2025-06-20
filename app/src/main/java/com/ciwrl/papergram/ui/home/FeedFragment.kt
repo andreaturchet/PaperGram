@@ -127,15 +127,17 @@ class FeedFragment : Fragment() {
         PagerSnapHelper().attachToRecyclerView(binding.recyclerViewFeed)
 
         binding.recyclerViewFeed.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val totalItemCount = layoutManager.itemCount
-                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
 
-                // Trigger load more when the user is near the end of the list
-                if (totalItemCount > 0 && lastVisibleItemPosition >= totalItemCount - 5) {
-                    homeViewModel.loadMorePapers()
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val lastVisibleItemPosition = layoutManager.findLastCompletelyVisibleItemPosition()
+                    val totalItemCount = recyclerView.adapter?.itemCount ?: 0
+
+                    if (totalItemCount > 0 && lastVisibleItemPosition >= totalItemCount - 5) {
+                        homeViewModel.loadMorePapers()
+                    }
                 }
             }
         })

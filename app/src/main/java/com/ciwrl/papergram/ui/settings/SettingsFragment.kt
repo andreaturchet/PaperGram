@@ -1,119 +1,96 @@
 package com.ciwrl.papergram.ui.settings
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.viewModels
+import androidx.core.os.LocaleListCompat
+import androidx.navigation.fragment.findNavController
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
 import com.ciwrl.papergram.R
 import com.ciwrl.papergram.data.UserPreferences
-import com.ciwrl.papergram.databinding.FragmentSettingsBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+/**
+ * The main settings screen, acting as a root for all other setting sub-screens.
+ * It extends PreferenceFragmentCompat to automatically build the UI from an XML resource.
+ */
 
-class SettingsFragment : Fragment() {
+class SettingsFragment : PreferenceFragmentCompat() {
 
-    private var _binding: FragmentSettingsBinding? = null
-    private val binding get() = _binding!!
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
-    private val viewModel: SettingsViewModel by viewModels()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.editTextUserName.setText(viewModel.getUserName())
-        binding.buttonSaveSettings.setOnClickListener {
-            val newName = binding.editTextUserName.text.toString().trim()
-            if (newName.isNotEmpty()) { binding.textInputLayoutUserName.error = null
-
-                viewModel.saveUserName(newName)
-                Toast.makeText(requireContext(), getString(R.string.name_saved), Toast.LENGTH_SHORT).show()
-            } else {
-                binding.textInputLayoutUserName.error = getString(R.string.name_cannot_be_empty)
-            }
+        findPreference<Preference>("account_settings")?.setOnPreferenceClickListener {
+            findNavController().navigate(R.id.action_settings_to_account)
+            true
         }
-        setupThemeSelection()
-        setupLanguageSelection()
-        setupFeedModeSelection()
-    }
 
-    private fun setupLanguageSelection() {
-        binding.textViewLanguage.setOnClickListener {
+        findPreference<Preference>("feed_settings")?.setOnPreferenceClickListener {
+            findNavController().navigate(R.id.action_settings_to_feed)
+            true
+        }
+
+        findPreference<Preference>("theme_settings")?.setOnPreferenceClickListener {
+            findNavController().navigate(R.id.action_settings_to_theme)
+            true
+        }
+
+        findPreference<Preference>("language_preference")?.setOnPreferenceClickListener {
             showLanguageSelectionDialog()
+            true
         }
     }
 
-    private fun setupThemeSelection() {
-        when (viewModel.getTheme()) {
-            AppCompatDelegate.MODE_NIGHT_NO -> binding.radioLight.isChecked = true
-            AppCompatDelegate.MODE_NIGHT_YES -> binding.radioDark.isChecked = true
-            else -> binding.radioSystem.isChecked = true
+    override fun onResume() {
+        super.onResume()
+        updateSummaries()
+    }
+
+    private fun updateSummaries() {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
+        // Update Account summary
+        val accountPreference: Preference? = findPreference("account_settings")
+        val userName = sharedPreferences.getString("user_name", "PaperGram User")
+        accountPreference?.summary = userName
+
+        // Update Feed summary
+        val feedPreference: Preference? = findPreference("feed_settings")
+        val feedModeValue = sharedPreferences.getString("feed_mode", "chronological")
+        feedPreference?.summary = if (feedModeValue == "random") getString(R.string.settings_feed_mode_random) else getString(R.string.settings_feed_mode_chronological)
+
+        // Update Theme summary
+        val themePreference: Preference? = findPreference("theme_settings")
+        val themeValue = sharedPreferences.getString("selected_theme", "-1")
+        val themeEntries = resources.getStringArray(R.array.theme_entries)
+        val themeValues = resources.getStringArray(R.array.theme_values)
+        val themeIndex = themeValues.indexOf(themeValue)
+        if (themeIndex >= 0) {
+            themePreference?.summary = themeEntries[themeIndex]
         }
 
-        binding.radioGroupTheme.setOnCheckedChangeListener { _, checkedId ->
-            val newTheme = when (checkedId) {
-                R.id.radio_light -> AppCompatDelegate.MODE_NIGHT_NO
-                R.id.radio_dark -> AppCompatDelegate.MODE_NIGHT_YES
-                else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            }
-            viewModel.setTheme(newTheme)
-        }
+        // Update Language summary
+        val languagePreference: Preference? = findPreference("language_preference")
+        val currentLanguageCode = UserPreferences.getLanguage(requireContext())
+        languagePreference?.summary = if (currentLanguageCode == "it") "Italiano" else "English"
     }
 
     private fun showLanguageSelectionDialog() {
         val languages = arrayOf("Italiano", "English")
         val languageCodes = arrayOf("it", "en")
-
-        val currentLanguageCode = viewModel.getLanguage()
+        val currentLanguageCode = UserPreferences.getLanguage(requireContext())
         val checkedItem = languageCodes.indexOf(currentLanguageCode).coerceAtLeast(0)
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Seleziona Lingua")
+            .setTitle(getString(R.string.select_lang))
             .setSingleChoiceItems(languages, checkedItem) { dialog, which ->
                 val selectedLanguageCode = languageCodes[which]
-
-                viewModel.setLanguage(selectedLanguageCode)
-
-                dialog.dismiss()
-
-                requireActivity().recreate()
-            }
-            .setNegativeButton("Annulla") { dialog, _ ->
+                UserPreferences.saveLanguage(requireContext(), selectedLanguageCode)
+                val appLocale = LocaleListCompat.forLanguageTags(selectedLanguageCode)
+                AppCompatDelegate.setApplicationLocales(appLocale)
                 dialog.dismiss()
             }
+            .setNegativeButton(android.R.string.cancel, null)
             .show()
-    }
-
-    private fun setupFeedModeSelection() {
-        when (viewModel.getFeedMode()) {
-            UserPreferences.FEED_MODE_RANDOM -> binding.radioRandom.isChecked = true
-            else -> binding.radioChronological.isChecked = true
-        }
-
-        binding.radioGroupFeedMode.setOnCheckedChangeListener { _, checkedId ->
-            val newMode = when (checkedId) {
-                R.id.radio_random -> UserPreferences.FEED_MODE_RANDOM
-                else -> UserPreferences.FEED_MODE_CHRONOLOGICAL
-            }
-            viewModel.saveFeedMode(newMode)
-            setFragmentResult("feed_mode_changed", bundleOf())
-        }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

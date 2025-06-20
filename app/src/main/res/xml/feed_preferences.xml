@@ -1,0 +1,10 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ListPreference
+        app:key="feed_mode"
+        app:title="@string/settings_feed_title"
+        app:summary="%s"
+        app:dialogTitle="@string/settings_feed_dialog_title"
+        app:entries="@array/feed_mode_entries"
+        app:entryValues="@array/feed_mode_values"
+        app:defaultValue="chronological" />
+</PreferenceScreen>

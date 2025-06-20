@@ -19,17 +19,10 @@ class PaperMapper(private val categoryMap: Map<String, String>) {
                 DisplayCategory(name = category.term, isTranslated = false)
             }
         } ?: emptyList()
-        val paperId = entry.id.substringAfterLast('/').substringBeforeLast('v')
-        var paperHtmlLink: String? = null
-        var paperPdfLink: String? = null
 
-        entry.links?.forEach { link ->
-            if (link.rel == "alternate" && link.type == "text/html") {
-                paperHtmlLink = link.href
-            } else if (link.type == "application/pdf" && (link.rel == "related" || link.titleAttribute == "pdf")) {
-                paperPdfLink = link.href
-            }
-        }
+        val paperId = entry.id.substringAfterLast('/').substringBeforeLast('v')
+        val paperHtmlLink = "https://arxiv.org/abs/$paperId"
+        val paperPdfLink = "https://arxiv.org/pdf/$paperId"
 
         return Paper(
             id = paperId,
@@ -40,7 +33,7 @@ class PaperMapper(private val categoryMap: Map<String, String>) {
             publishedDate = entry.publishedDate.substringBefore("T"),
             htmlLink = paperHtmlLink,
             pdfLink = paperPdfLink,
-            likeCount = (20..350).random(), // probabilmente la logica di like/commenti casuale andrebbe gestita diversamente in produzione
+            likeCount = (20..350).random(),
             isLikedByUser = isLiked,
             commentCount = commentCount
         )

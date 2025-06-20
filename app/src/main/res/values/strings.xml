@@ -134,6 +134,24 @@
     <string name="share_body_text">Dai un\'occhiata a questo paper:\n\n*%1$s*\n\nAutori: %2$s\n\nLink: %3$s</string>
     <string name="name_cannot_be_empty">Il nome non può essere vuoto</string>
 
+    <string name="settings_category_general">Generali</string>
+    <string name="settings_category_appearance">Aspetto</string>
+
+    <string name="settings_account_title">Account</string>
+    <string name="settings_account_summary">Modifica il tuo nome utente</string>
+    <string name="settings_account_dialog_title">Inserisci il tuo nome</string>
+
+    <string name="settings_feed_title">Feed</string>
+    <string name="settings_feed_summary">Scegli come visualizzare i paper</string>
+    <string name="settings_feed_dialog_title">Scegli una modalità</string>
+
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_summary">Scegli il tema chiaro, scuro o di sistema</string>
+    <string name="settings_theme_dialog_title">Scegli un tema</string>
+
+    <string name="settings_language_title">Lingua</string>
+    <string name="settings_language_summary">Seleziona la lingua dell\'applicazione</string>
+
     <string name="settings_feed_mode_title">Modalità del Feed</string>
     <string name="settings_feed_mode_chronological">Cronologico (Più Recenti)</string>
     <string name="settings_feed_mode_random">Casuale (Scoperta)</string>

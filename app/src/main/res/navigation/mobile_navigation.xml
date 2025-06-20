@@ -42,8 +42,31 @@
     <fragment
         android:id="@+id/nav_settings"
         android:name="com.ciwrl.papergram.ui.settings.SettingsFragment"
-        android:label="@string/impostazioni"
-        tools:layout="@layout/fragment_settings" />
+        android:label="@string/impostazioni" >
+
+        <action
+            android:id="@+id/action_settings_to_account"
+            app:destination="@id/accountSettingsFragment" />
+        <action
+            android:id="@+id/action_settings_to_feed"
+            app:destination="@id/feedSettingsFragment" />
+        <action
+            android:id="@+id/action_settings_to_theme"
+            app:destination="@id/themeSettingsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/accountSettingsFragment"
+        android:name="com.ciwrl.papergram.ui.settings.sub.AccountSettingsFragment"
+        android:label="Account" />
+    <fragment
+        android:id="@+id/feedSettingsFragment"
+        android:name="com.ciwrl.papergram.ui.settings.sub.FeedSettingsFragment"
+        android:label="Feed" />
+    <fragment
+        android:id="@+id/themeSettingsFragment"
+        android:name="com.ciwrl.papergram.ui.settings.sub.ThemeSettingsFragment"
+        android:label="Tema" />
 
     <fragment
         android:id="@+id/nav_categories"

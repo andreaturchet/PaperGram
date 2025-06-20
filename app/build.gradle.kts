@@ -77,6 +77,7 @@ dependencies {
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.shimmer)
     implementation(libs.photoview)
+    implementation("androidx.preference:preference-ktx:1.2.1")
 
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.androidx.core.testing)
